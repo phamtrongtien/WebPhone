@@ -1,7 +1,7 @@
 import { Row } from "antd";
 import styled from "styled-components"
 export const Wrapperheader = styled(Row)`
-    padding: 10px 20px;
+    padding: 10px 120px;
     background-color: rgb(26,140,255);
     align-items: center;
 `
