@@ -34,12 +34,3 @@ color: rgb(255,66,78);
 font-size: 12px;
 font-weight: 400;
 `
-
-export const WrapperImageStyle = styled.img`
-top:-1px;
-left: -1px;
-border-top-left-radius:3px;
-position: absolute;
-height: 24px;
-width: 24px;
-`
