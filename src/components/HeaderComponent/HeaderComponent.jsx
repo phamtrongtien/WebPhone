@@ -1,7 +1,6 @@
 import React from 'react'
-import { Col, Flex, Row, Space } from 'antd';
+import { Col } from 'antd';
 import { WrapperAccout, Wrapperheader, WrapperTextHeader, WrapperTextHeaderSmall } from './style';
-import Search from 'antd/es/input/Search';
 import {
     UserOutlined,
     CaretDownOutlined,

@@ -6,4 +6,5 @@ align-items: center;
 gap: 24px;
 justify-content: flex-start ;
 border-bottom: solid;
+height: 44px;
 `
