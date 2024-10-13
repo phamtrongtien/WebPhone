@@ -1,33 +1,39 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import NavBarComponent from '../../components/NavBarComponent/NavBarComponent';
 import CardComponent from '../../components/CardComponent/CardComponent';
-import { WrapperRow, WrapperCol } from './style'; // Import styled components
+import { WrapperRow, WrapperCol, WrapperProducts } from './style'; // Import styled components
+import { Pagination } from 'antd';
+
 
 const TypeProductPage = () => {
-    return (
-        <WrapperRow>
-            <WrapperCol span={4} >
-                <NavBarComponent />
-            </WrapperCol>
-            <WrapperCol span={20} style={{
-                marginTop: '18.62px',
-                display: 'flex',
-                flexWrap: 'wrap', // Cho phép các card wrap nếu cần
-                gap: '20px' // Khoảng cách giữa các card
-            }}>
-                <CardComponent />
-                <CardComponent />
-                <CardComponent />
-                <CardComponent />
-                <CardComponent />
-                <CardComponent />
-                <CardComponent />
-                <CardComponent />
-                <CardComponent />
+    const onChange = (page) => {
+        console.log(`Current Page: ${page}`);
+    };
 
-            </WrapperCol>
-        </WrapperRow>
+    return (
+        <Fragment>
+            <WrapperRow>
+                <WrapperCol span={4}>
+                    <NavBarComponent />
+                </WrapperCol>
+                <WrapperCol span={20} style={{ padding: '0 120px', background: '#efefef' }}>
+                    <WrapperProducts>
+                        <CardComponent />
+                        <CardComponent />
+                        <CardComponent />
+                        <CardComponent />
+                        <CardComponent />
+                    </WrapperProducts>
+                    <Pagination
+                        defaultCurrent={2}
+                        total={100}
+                        onChange={onChange}
+                        style={{ textAlign: 'center', marginTop: '20px' }}
+                    />
+                </WrapperCol>
+            </WrapperRow>
+        </Fragment>
     );
-}
+};
 
 export default TypeProductPage;
