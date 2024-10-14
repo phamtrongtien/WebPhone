@@ -1,11 +1,87 @@
-import React from 'react'
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  WrapperContainerLeft,
+  WrapperContainerRight,
+  WrapperTextLight,
+  WrapperLoginButton,
+  WrapperOuterContainer,
+  WrapperInnerContainer,
+  WrapperImageContainer,
+  WrapperHeader,
+  WrapperCard
+} from './style';
+import InputFormComponent from '../../components/InputFormComponent/InputFormComponent';
+import ButtonComponent from '../../components/ButtonComponent/ButtonComponent';
+import anhdk from '../../assets/img/anhdk.png';
+import { Image } from 'antd';
+import { ArrowLeftOutlined, HeartOutlined } from '@ant-design/icons';
 
 const SigupPage = () => {
-  return (
-    <div>
-      in
-    </div>
-  )
-}
+  const navigate = useNavigate();
+  const [flipped, setFlipped] = useState(false);
 
-export default SigupPage
+  const handleSignUpClick = () => {
+    setFlipped(true); // Bắt đầu hiệu ứng lật
+    setTimeout(() => {
+      navigate('/sig-in'); // Điều hướng sau khi hiệu ứng kết thúc
+    }, 200); // 300ms tương ứng với thời gian của hiệu ứng lật
+  };
+
+  return (
+    <WrapperOuterContainer>
+      <WrapperCard flipped={flipped}>
+        <WrapperInnerContainer>
+
+          <WrapperContainerRight>
+            <WrapperImageContainer>
+              <Image src={anhdk} preview={false} alt='anhdk' />
+              <div>
+                <h4 style={{ color: '#0077CC' }}>Mua sắm tại BEEBEE</h4>
+                <h4 style={{ color: '#0077CC' }}>Siêu ưu đãi mỗi ngày <HeartOutlined /></h4>
+              </div>
+            </WrapperImageContainer>
+          </WrapperContainerRight>
+          <WrapperContainerLeft>
+            <button style={{ background: 'none', border: 'none' }}>
+              <ArrowLeftOutlined />
+            </button>
+            <WrapperHeader>Xin chào</WrapperHeader>
+            <h2>Đăng ký tài khoản</h2>
+
+            <InputFormComponent placeholder='tên' />
+            <InputFormComponent placeholder='số điện thoại' />
+            <InputFormComponent placeholder='abcde@gmail.com' />
+            <InputFormComponent placeholder='password' type='password' />
+            <InputFormComponent placeholder='conformpassword' type='password' />
+
+            <WrapperLoginButton>
+              <ButtonComponent
+                size={40}
+                styleButton={{
+                  background: 'rgb(255, 57, 69)',
+                  height: '48px',
+                  width: '200px',
+                  marginTop: '20px',
+                }}
+                textButton='Đăng ký'
+                styleTextButton={{ color: 'white' }}
+              />
+            </WrapperLoginButton>
+            <p>
+              bạn đã có tài khoản
+              <button
+                onClick={handleSignUpClick}
+                style={{ border: 'none', background: 'none', cursor: 'pointer' }}
+              >
+                <WrapperTextLight>đăng nhập</WrapperTextLight>
+              </button>
+            </p>
+          </WrapperContainerLeft>
+        </WrapperInnerContainer>
+      </WrapperCard>
+    </WrapperOuterContainer>
+  );
+};
+
+export default SigupPage;
