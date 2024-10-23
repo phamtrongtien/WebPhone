@@ -46,7 +46,8 @@ export const WrapperContainerRight = styled.div`
 
 export const WrapperTextLight = styled.span`
     color: #89c8f2;
-    font-size: 14px;
+    font-size: 11px;
+    cursor: pointer;
 `;
 
 export const WrapperLoginButton = styled.div`

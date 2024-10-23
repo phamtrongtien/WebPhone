@@ -20,17 +20,40 @@ import { ArrowLeftOutlined, HeartOutlined } from '@ant-design/icons';
 const SigupPage = () => {
   const navigate = useNavigate();
   const [flipped, setFlipped] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [confirmpassword, setConfirmPassword] = useState('');
 
-  const handleSignUpClick = () => {
-    setFlipped(true); // Bắt đầu hiệu ứng lật
+  const handleOnchangeEmail = (value) => {
+    setEmail(value);
+  }
+  const handleOnchangePassword = (value) => {
+    setPassword(value);
+  }
+  const handleOnchangeName = (value) => {
+    setName(value);
+  }
+  const handleOnchangePhone = (value) => {
+    setPhone(value);
+  }
+  const handleOnchangeConfirmPassword = (value) => {
+    setConfirmPassword(value);
+  }
+  const handleSigup = () => {
+    console.log('sig-up', name, email, password, confirmpassword, phone)
+  }
+  const handleSignInClick = () => {
+    setFlipped(true);  // Bắt đầu hiệu ứng lật
     setTimeout(() => {
-      navigate('/sig-in'); // Điều hướng sau khi hiệu ứng kết thúc
-    }, 200); // 300ms tương ứng với thời gian của hiệu ứng lật
+      navigate('/sig-in');  // Điều hướng sau khi hiệu ứng kết thúc
+    }, 300);  // 500ms tương ứng với thời gian của hiệu ứng lật
   };
-
   return (
     <WrapperOuterContainer>
-      <WrapperCard flipped={flipped}>
+      <WrapperCard flipped={flipped ? true : undefined}>
+
         <WrapperInnerContainer>
 
           <WrapperContainerRight>
@@ -43,26 +66,30 @@ const SigupPage = () => {
             </WrapperImageContainer>
           </WrapperContainerRight>
           <WrapperContainerLeft>
-            <button style={{ background: 'none', border: 'none' }}>
+            <button onClick={handleSignInClick} style={{ background: 'none', border: 'none' }}>
               <ArrowLeftOutlined />
             </button>
             <WrapperHeader>Xin chào</WrapperHeader>
             <h2>Đăng ký tài khoản</h2>
 
-            <InputFormComponent placeholder='tên' />
-            <InputFormComponent placeholder='số điện thoại' />
-            <InputFormComponent placeholder='abcde@gmail.com' />
-            <InputFormComponent placeholder='password' type='password' />
-            <InputFormComponent placeholder='conformpassword' type='password' />
+            <InputFormComponent placeholder='tên' value={name} onChange={handleOnchangeName} />
+            <InputFormComponent placeholder='số điện thoại' value={phone} onChange={handleOnchangePhone} />
+            <InputFormComponent placeholder='abcde@gmail.com' value={email} onChange={handleOnchangeEmail} />
+            <InputFormComponent placeholder='password' type='password' value={password} onChange={handleOnchangePassword} />
+            <InputFormComponent placeholder='conformpassword' type='password' value={confirmpassword} onChange={handleOnchangeConfirmPassword} />
 
             <WrapperLoginButton>
               <ButtonComponent
+                disabled={!email.length || !password.length || !confirmpassword.length || !name.length || !phone.length}
+                onClick={handleSigup}
                 size={40}
                 styleButton={{
                   background: 'rgb(255, 57, 69)',
                   height: '48px',
                   width: '200px',
                   marginTop: '20px',
+                  opacity: !email || !password || !name || !phone || !confirmpassword ? 0.5 : 1 // giảm độ trong suốt nếu thiếu email hoặc password
+
                 }}
                 textButton='Đăng ký'
                 styleTextButton={{ color: 'white' }}
@@ -71,7 +98,7 @@ const SigupPage = () => {
             <p>
               bạn đã có tài khoản
               <button
-                onClick={handleSignUpClick}
+                onClick={handleSignInClick}
                 style={{ border: 'none', background: 'none', cursor: 'pointer' }}
               >
                 <WrapperTextLight>đăng nhập</WrapperTextLight>
