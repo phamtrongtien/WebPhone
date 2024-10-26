@@ -2,11 +2,17 @@ import React from 'react'
 import { StyleNameProduct, WrapperCardStyle, WrapperDiscountText, WrapperPriceText, WrapperReportText } from './style'
 import { StarFilled } from '@ant-design/icons'
 import like from '../../assets/img/like.png';
+import { useNavigate } from 'react-router-dom';
 
 
 const CardComponent = () => {
+    const navigate = useNavigate();
+    const handleCardDetail = () => {
+        navigate('/product-detail')
+    }
     return (
         <WrapperCardStyle
+            onClick={handleCardDetail}
             hoverable
             style={{ width: '180px' }}
             cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}

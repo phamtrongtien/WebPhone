@@ -4,7 +4,7 @@ import InputComponent from '../InputComponent/InputComponent';
 import ButtonComponent from '../ButtonComponent/ButtonComponent';
 
 const ButtonInputsearch = (props) => {
-    const { size, placeholder, bordered, textButton, backgroundColorInput = "white", backgroundColorButton = '#89c8f2' } = props;
+    const { size, placeholder, bordered, textButton, backgroundColorInput = "#e4e1e1", backgroundColorButton = 'rgb(38 146 242)' } = props;
     return (
         <div style={{ display: 'flex' }}>
             <InputComponent

@@ -30,9 +30,7 @@ const ProductDetailComponent = () => {
           <WrapperColImage span={4}>
             <WrapperImageSmall src={conanDetail1} alt='dt1' />
           </WrapperColImage>
-          {/* <WrapperColImage span={4}>
-            <WrapperImageSmall src={conanDetail} alt='dt1' />
-          </WrapperColImage> */}
+
         </Row>
       </Col>
       <Col span={14} style={{ paddingLeft: '10px' }}>

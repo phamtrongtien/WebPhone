@@ -3,6 +3,7 @@ import NavBarComponent from '../../components/NavBarComponent/NavBarComponent';
 import CardComponent from '../../components/CardComponent/CardComponent';
 import { WrapperRow, WrapperCol, WrapperProducts } from './style'; // Import styled components
 import { Pagination } from 'antd';
+import FooterComponent from '../../components/FooterComponent/FooterComponent';
 
 
 const TypeProductPage = () => {
@@ -32,6 +33,8 @@ const TypeProductPage = () => {
                     />
                 </WrapperCol>
             </WrapperRow>
+            <FooterComponent />
+
         </Fragment>
     );
 };

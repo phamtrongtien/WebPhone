@@ -14,10 +14,13 @@ const HeaderComponent = () => {
     const handleNavigateLogin = () => {
         navigate("/sig-in")
     }
+    const handleBackHome = () => {
+        navigate('/');
+    }
     return (
         <div>
             <Wrapperheader >
-                <Col span={6}><WrapperTextHeader>BEEBEE</WrapperTextHeader></Col>
+                <Col span={6}><WrapperTextHeader onClick={handleBackHome}>BEEBEE</WrapperTextHeader></Col>
                 <Col span={11}>
                     <ButtonInputsearch
                         placeholder='Tìm kiếm sản phẩm'
@@ -46,7 +49,7 @@ const HeaderComponent = () => {
                     </WrapperAccout>
                     <div>
                         <Badge count={4} size='small'>
-                            <ShoppingCartOutlined style={{ fontSize: '30px', color: "white" }} />
+                            <ShoppingCartOutlined style={{ fontSize: '30px', color: "black" }} />
                         </Badge>
                         <WrapperTextHeaderSmall>Giỏ hàng</WrapperTextHeaderSmall>
 
