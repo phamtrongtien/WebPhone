@@ -66,5 +66,5 @@ export const WrapperHeader = styled.h1`
 `;
 
 export const WrapperLoginButton = styled.div`
-  margin-top: 20px;
+  /* margin-top: 20px; */
 `;

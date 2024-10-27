@@ -9,12 +9,14 @@ import { ArrowLeftOutlined, HeartOutlined } from '@ant-design/icons';
 
 import * as UserService from '../../services/UserService';
 import { useMutationHooks } from '../../hook/useMutationHook';
+import LoadingComponent from '../../components/LoadingComponent/LoadingComponent';
 const SiginPage = () => {
     const navigate = useNavigate();
     const mutation = useMutationHooks(
         data => UserService.loginUser(data)
     )
-    console.log(mutation)
+    const [isLoading, setIsLoading] = useState(false);
+    const { data } = mutation;
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [flipped, setFlipped] = useState(false);
@@ -38,11 +40,20 @@ const SiginPage = () => {
         setPassword(value);
     }
     const handleSigin = () => {
+        setIsLoading(true); // Bắt đầu hiển thị spinner
+
+        // Tự động tắt spinner sau 1 giây
+        setTimeout(() => {
+            setIsLoading(false); // Ẩn spinner sau 1 giây
+        }, 1000);
+
+        // Gọi API đăng nhập
         mutation.mutate({
             email,
             password
-        })
-        console.log(email, password)
+        });
+
+        console.log(email, password);
     }
     return (
         <WrapperOuterContainer>
@@ -57,22 +68,25 @@ const SiginPage = () => {
                         <h2>Đăng nhập</h2>
                         <InputFormComponent placeholder='abcde@gmail.com' value={email} onChange={handleOnchangeEmail} />
                         <InputFormComponent placeholder='password' type='password' value={password} onChange={handleOnchangePassword} />
+                        {data?.status === "ERR" && <span style={{ color: 'red' }}>{data?.message}</span>}
 
                         <WrapperLoginButton>
-                            <ButtonComponent
-                                onClick={handleSigin}
-                                size={40}
-                                styleButton={{
-                                    background: '#0077CC',
-                                    height: '48px',
-                                    width: '200px',
-                                    marginTop: '20px',
-                                    opacity: !email || !password ? 0.5 : 1 // giảm độ trong suốt nếu thiếu email hoặc password
-                                }}
-                                textButton='Đăng nhập'
-                                styleTextButton={{ color: 'white' }}
-                            />
+                            <LoadingComponent isLoading={isLoading}>
+                                <ButtonComponent
+                                    onClick={handleSigin}
+                                    size={40}
+                                    styleButton={{
+                                        background: '#0077CC',
+                                        height: '48px',
+                                        width: '500px',
+                                        marginTop: '20px',
+                                        opacity: !email || !password ? 0.5 : 1 // giảm độ trong suốt nếu thiếu email hoặc password
+                                    }}
+                                    textButton='Đăng nhập'
+                                    styleTextButton={{ color: 'white' }}
+                                />
 
+                            </LoadingComponent>
                         </WrapperLoginButton>
                         <p><WrapperTextLight>Quên mật khẩu ?</WrapperTextLight></p>
                         <p>chưa có tài khoản    <button onClick={handleSignUpClick} style={{ border: 'none', background: 'none', cursor: 'pointer' }}><WrapperTextLight>Tạo tài khoản</WrapperTextLight></button></p>

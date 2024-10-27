@@ -15,7 +15,10 @@ import InputFormComponent from '../../components/InputFormComponent/InputFormCom
 import ButtonComponent from '../../components/ButtonComponent/ButtonComponent';
 import anhdk from '../../assets/img/anhdk.png';
 import { Image } from 'antd';
+import * as UserService from '../../services/UserService';
+import { useMutationHooks } from '../../hook/useMutationHook';
 import { ArrowLeftOutlined, HeartOutlined } from '@ant-design/icons';
+import LoadingComponent from '../../components/LoadingComponent/LoadingComponent';
 
 const SigupPage = () => {
   const navigate = useNavigate();
@@ -25,6 +28,11 @@ const SigupPage = () => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [confirmpassword, setConfirmPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const mutation = useMutationHooks(
+    data => UserService.sigUpUser(data)
+  )
 
   const handleOnchangeEmail = (value) => {
     setEmail(value);
@@ -42,8 +50,25 @@ const SigupPage = () => {
     setConfirmPassword(value);
   }
   const handleSigup = () => {
-    console.log('sig-up', name, email, password, confirmpassword, phone)
+    setIsLoading(true);
+
+    // Tự động tắt spinner sau 1 giây
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    mutation.mutate({
+      name, email, password, confirmpassword, phone
+    }, {
+      onSuccess: (data) => {
+        console.log("Đăng ký thành công:", data);
+      },
+      onError: (error) => {
+        console.log("Lỗi đăng ký:", error);
+      }
+    });
   }
+
   const handleSignInClick = () => {
     setFlipped(true);  // Bắt đầu hiệu ứng lật
     setTimeout(() => {
@@ -79,21 +104,25 @@ const SigupPage = () => {
             <InputFormComponent placeholder='conformpassword' type='password' value={confirmpassword} onChange={handleOnchangeConfirmPassword} />
 
             <WrapperLoginButton>
-              <ButtonComponent
-                disabled={!email.length || !password.length || !confirmpassword.length || !name.length || !phone.length}
-                onClick={handleSigup}
-                size={40}
-                styleButton={{
-                  background: 'rgb(255, 57, 69)',
-                  height: '48px',
-                  width: '200px',
-                  marginTop: '20px',
-                  opacity: !email || !password || !name || !phone || !confirmpassword ? 0.5 : 1 // giảm độ trong suốt nếu thiếu email hoặc password
+              {mutation.data?.status === "ERR" && <span style={{ color: 'red' }}>{mutation.data?.message}</span>}
 
-                }}
-                textButton='Đăng ký'
-                styleTextButton={{ color: 'white' }}
-              />
+              <LoadingComponent isLoading={isLoading}>
+                <ButtonComponent
+                  disabled={!email.length || !password.length || !confirmpassword.length || !name.length || !phone.length}
+                  onClick={handleSigup}
+                  size={40}
+                  styleButton={{
+                    background: 'rgb(255, 57, 69)',
+                    height: '48px',
+                    width: '500px',
+                    marginTop: '20px',
+                    opacity: !email || !password || !name || !phone || !confirmpassword ? 0.5 : 1 // giảm độ trong suốt nếu thiếu email hoặc password
+
+                  }}
+                  textButton='Đăng ký'
+                  styleTextButton={{ color: 'white' }}
+                />
+              </LoadingComponent>
             </WrapperLoginButton>
             <p>
               bạn đã có tài khoản

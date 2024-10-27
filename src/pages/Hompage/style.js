@@ -3,6 +3,12 @@ import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 
 export const HomePageContainer = styled.div`
     padding: 0 120px;
+     transition: filter 0.3s ease-in-out;
+
+    &.blur {
+        filter: blur(5px);  /* Làm mờ nền khi quảng cáo xuất hiện */
+        pointer-events: none;  /* Ngăn người dùng tương tác với trang khi quảng cáo đang hiển thị */
+    }
 `;
 
 export const WrapperTypeProduct = styled.div`
