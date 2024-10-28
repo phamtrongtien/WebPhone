@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react';
 import NavBarComponent from '../../components/NavBarComponent/NavBarComponent';
 import CardComponent from '../../components/CardComponent/CardComponent';
-import { WrapperRow, WrapperCol, WrapperProducts } from './style'; // Import styled components
-import { Pagination } from 'antd';
+import { WrapperRow, WrapperCol, WrapperProducts, WrapperPagination } from './style'; // Import styled components
+
 import FooterComponent from '../../components/FooterComponent/FooterComponent';
 
 
@@ -17,7 +17,7 @@ const TypeProductPage = () => {
                 <WrapperCol span={4}>
                     <NavBarComponent />
                 </WrapperCol>
-                <WrapperCol span={20} style={{ padding: '0 120px', background: '#efefef' }}>
+                <WrapperCol span={20} style={{ padding: '0 120px', marginTop: '10px', marginBottom: '10px', background: 'rgba(255, 255, 255, 0.54)' }}>
                     <WrapperProducts>
                         <CardComponent />
                         <CardComponent />
@@ -25,7 +25,7 @@ const TypeProductPage = () => {
                         <CardComponent />
                         <CardComponent />
                     </WrapperProducts>
-                    <Pagination
+                    <WrapperPagination
                         defaultCurrent={2}
                         total={100}
                         onChange={onChange}

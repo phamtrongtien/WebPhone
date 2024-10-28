@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { WrapperContainerLeft, WrapperContainerRight, WrapperTextLight, WrapperLoginButton, WrapperOuterContainer, WrapperInnerContainer, WrapperImageContainer, WrapperHeader, WrapperCard } from './style';
 import InputFormComponent from '../../components/InputFormComponent/InputFormComponent';
@@ -10,13 +10,26 @@ import { ArrowLeftOutlined, HeartOutlined } from '@ant-design/icons';
 import * as UserService from '../../services/UserService';
 import { useMutationHooks } from '../../hook/useMutationHook';
 import LoadingComponent from '../../components/LoadingComponent/LoadingComponent';
+import * as message from '../../components/Message/Message';
+
+
 const SiginPage = () => {
     const navigate = useNavigate();
     const mutation = useMutationHooks(
         data => UserService.loginUser(data)
     )
     const [isLoading, setIsLoading] = useState(false);
-    const { data } = mutation;
+    const { data, isSuccess, isError } = mutation;  // Đưa phần này lên trước khi sử dụng
+    useEffect(() => {
+        if (isSuccess === true) {
+            message.success();
+            navigate('/');
+            console.log('data', data);
+            localStorage.setItem('access_token', data?.access_token)
+        } else if (isError) {
+            message.error();
+        }
+    }, [isSuccess]);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [flipped, setFlipped] = useState(false);

@@ -3,7 +3,7 @@ import React from 'react'
 import conan from '../../assets/img/conan.webp';
 import conanDetail from '../../assets/img/conanDetail.webp';
 import conanDetail1 from '../../assets/img/conanDetail1.webp';
-import { WrapperAddressProduct, WrapperColImage, WrapperImageSmall, WrapperInputNumber, WrapperPriceProduct, WrapperPriceTextProduct, WrapperQualityProduct, WrapperQualityproduct, WrapperStyleNameProduct, WrapperStyleTextSale } from './style';
+import { WrapperAddressProduct, WrapperColImage, WrapperImageSmall, WrapperInputNumber, WrapperPriceProduct, WrapperPriceTextProduct, WrapperProductDetail, WrapperQualityProduct, WrapperQualityproduct, WrapperStyleNameProduct, WrapperStyleTextSale } from './style';
 import { WrapperDiscountText, WrapperReportText } from '../CardComponent/style';
 import { MinusOutlined, PlusOutlined, StarFilled } from '@ant-design/icons';
 import ButtonComponent from '../ButtonComponent/ButtonComponent';
@@ -11,7 +11,7 @@ import ButtonComponent from '../ButtonComponent/ButtonComponent';
 const ProductDetailComponent = () => {
   const onChange = () => { }
   return (
-    <Row style={{ padding: '16px', background: 'white' }}>
+    <WrapperProductDetail >
       <Col span={10}>
         <Image src={conan} alt='conan' />
         <Row style={{ flexWrap: 'nowrap', paddingTop: '10px', justifyContent: 'space-between' }}>
@@ -51,6 +51,8 @@ const ProductDetailComponent = () => {
           <span> Giao đến</span>
           <span className='address'> Mộ Lao, Hà Đông, Hà Nội</span>
           <span className='change-address'>-Đổi địa chỉ</span>
+
+          <p>Với nội dung lôi cuốn và hấp dẫn</p>
         </WrapperAddressProduct>
         <div style={{ margin: '10px 0 20px', padding: '10px 0', borderTop: '1px solid #e5e5e5', borderBottom: '1px solid #e5e5e5' }}>
           <div style={{ marginBottom: '5px' }}>
@@ -97,7 +99,7 @@ const ProductDetailComponent = () => {
           </ButtonComponent>
         </div>
       </Col>
-    </Row>
+    </WrapperProductDetail>
   )
 }
 

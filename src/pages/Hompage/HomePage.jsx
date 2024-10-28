@@ -44,12 +44,13 @@ const HomePage = () => {
                             <CardComponent onClick={handleProductDetail} key={index} />
                         ))}
                     </CardsContainer>
-                    <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+                    <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: '10px', marginBottom: '10px' }}>
                         <WrapperButtonMore onClick={handleCategory} textButton='Xem thêm' type='outline' styleTextButton={{ fontWeight: '500' }} />
                     </div>
                 </div>
-                <FooterComponent />
             </HomePageContainer>
+            <FooterComponent />
+
         </>
     );
 };

@@ -1,4 +1,4 @@
-import { Col, Image, InputNumber } from "antd";
+import { Col, Image, InputNumber, Row } from "antd";
 import styled from "styled-components";
 
 export const WrapperImageSmall = styled(Image)`
@@ -65,4 +65,9 @@ export const WrapperInputNumber = styled(InputNumber)`
 &.ant-input-number.ant-input-number-sm{
     width: 50px;
 }
+`
+export const WrapperProductDetail = styled(Row)`
+background:(255, 255, 255, 0.54);
+padding: 16px;
+border-radius: 20px;
 `

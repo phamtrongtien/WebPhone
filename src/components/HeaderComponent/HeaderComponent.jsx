@@ -27,7 +27,7 @@ const HeaderComponent = () => {
                         textButton='Search'
                         size='large'
                         style={{ width: 100 }}
-                        bordered={false}
+
                     />
                 </Col>
 
