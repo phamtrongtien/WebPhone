@@ -1,0 +1,47 @@
+.manage-customer {
+  padding: 20px; /* Padding cho container */
+  background: rgba(255, 255, 255, 0.5); /* Màu nền cho container */
+  border-radius: 8px; /* Bo góc cho container */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng cho container */
+  margin: 50px auto; /* Căn giữa container */
+  max-width: 1200px; /* Đặt chiều rộng tối đa cho container */
+  width: 90%; /* Chiều rộng bằng 90% của màn hình */
+}
+
+.manage-customer h2 {
+  font-weight: 600; /* Đậm cho tiêu đề */
+  margin-bottom: 20px; /* Khoảng cách dưới tiêu đề */
+  color: #1890ff; /* Màu sắc cho tiêu đề */
+}
+
+.manage-customer table {
+  border-collapse: collapse; /* Gộp các đường viền của bảng */
+  width: 100%; /* Chiều rộng bảng đầy đủ */
+}
+
+.manage-customer th,
+.manage-customer td {
+  padding: 12px; /* Padding cho các ô */
+  text-align: left; /* Căn trái cho văn bản trong các ô */
+  border-bottom: 1px solid #f0f0f0; /* Đường viền dưới cho ô bảng */
+}
+
+.manage-customer th {
+  background-color: #e6f7ff; /* Màu nền cho tiêu đề bảng */
+  color: #1890ff; /* Màu chữ tiêu đề */
+  font-weight: bold; /* Đậm cho chữ tiêu đề */
+}
+
+.manage-customer tr:hover {
+  background-color: #f5f5f5; /* Màu nền khi hover lên hàng */
+}
+
+.manage-customer .inactive {
+  color: red; /* Màu đỏ cho trạng thái không hoạt động */
+  font-weight: bold; /* Đậm cho chữ trạng thái không hoạt động */
+}
+
+.manage-customer .active {
+  color: green; /* Màu xanh cho trạng thái hoạt động */
+  font-weight: bold; /* Đậm cho chữ trạng thái hoạt động */
+}

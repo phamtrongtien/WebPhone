@@ -7,6 +7,7 @@ import SiginPage from "../pages/SiginPage/SiginPage"
 import SigupPage from "../pages/SigupPage/SigupPage"
 import ProductDetailPage from "../pages/ProductDetailPage/ProductDetailPage"
 import AdminPage from "../pages/AdminPage/AdminPage"
+import ManageOrder from "../components/AdminComponent/ManageOrder/ManageOrder"
 
 export const routes = [
     {
@@ -56,6 +57,7 @@ export const routes = [
         page: AdminPage,
 
     },
+
     {
         path: '*',
         page: NoteFoundPage

@@ -50,3 +50,10 @@ export const WrapperButtonMore = styled(ButtonComponent)`
         background-color: rgb(13, 92, 182);
     }
 `;
+
+export const WrapperTitleProduct = styled.h2`
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 10px;
+    border-radius: 20px;
+`;

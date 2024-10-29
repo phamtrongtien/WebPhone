@@ -22,22 +22,27 @@ export const SidebarData = [
   {
     icon: UilEstate,
     heading: "Dashboard",
+    path: "/admin", // Cập nhật nếu cần
   },
   {
     icon: UilClipboardAlt,
     heading: "Orders",
+    // path: "/admin/order", // Đường dẫn tới ManageOrder
   },
   {
     icon: UilUsersAlt,
     heading: "Customers",
+    path: "/admin/customers",
   },
   {
     icon: UilPackage,
-    heading: 'Products'
+    heading: "Products",
+    path: "/admin/products",
   },
   {
     icon: UilChart,
-    heading: 'Analytics'
+    heading: "Analytics",
+    path: "/admin/analytics",
   },
 ];
 

@@ -17,6 +17,9 @@ const HeaderComponent = () => {
     const handleBackHome = () => {
         navigate('/');
     }
+    const handleUserCard = () => {
+        navigate('/order')
+    }
     return (
         <div>
             <Wrapperheader >
@@ -47,7 +50,7 @@ const HeaderComponent = () => {
                         </div>
 
                     </WrapperAccout>
-                    <div>
+                    <div style={{ cursor: 'pointer' }} onClick={handleUserCard}>
                         <Badge count={4} size='small'>
                             <ShoppingCartOutlined style={{ fontSize: '30px', color: "black" }} />
                         </Badge>

@@ -25,7 +25,7 @@ color: rgb(120,120,120);
 `
 
 export const WrapperPriceProduct = styled.div`
-background: rgb(250,250,250);
+background: rgba(250,250,250,0.8);
 border-radius:4px ;
 `
 export const WrapperPriceTextProduct = styled.h1`
@@ -67,7 +67,7 @@ export const WrapperInputNumber = styled(InputNumber)`
 }
 `
 export const WrapperProductDetail = styled(Row)`
-background:(255, 255, 255, 0.54);
+background:rgba(255, 255, 255, 0.54);
 padding: 16px;
 border-radius: 20px;
 `
