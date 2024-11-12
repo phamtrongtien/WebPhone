@@ -53,7 +53,7 @@ const Sidebar = ({ setActiveComponent }) => { // Nhận setActiveComponent từ 
           ))}
           {/* signoutIcon */}
           <div className="menuItem">
-            <UilSignOutAlt />
+            <UilSignOutAlt /> Logout
           </div>
         </div>
       </motion.div>

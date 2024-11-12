@@ -9,7 +9,6 @@ import { useDispatch } from 'react-redux';
 import * as UserService from '../../services/UserService';
 import { resetUser } from '../../redux/slices/userSlide'
 import LoadingComponent from '../LoadingComponent/LoadingComponent';
-import { useRadioGroup } from '@mui/material';
 const HeaderComponent = () => {
     const navigate = useNavigate();
     const user = useSelector((state) => state.user);
@@ -18,7 +17,7 @@ const HeaderComponent = () => {
     const handleBackHome = () => navigate('/');
     const handleUserCard = () => navigate('/order');
     const [userName, setUserName] = useState();
-    const [avatar, setAvatar] = useState('');
+
     const [loading, setLoading] = useState(false);
     // Rename function to something appropriate like logoutUser
     const handleLogout = async () => {

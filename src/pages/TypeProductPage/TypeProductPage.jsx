@@ -40,19 +40,21 @@ const TypeProductPage = () => {
                     <NavBarComponent />
                 </WrapperCol>
                 <WrapperCol span={20} style={{ padding: '0 120px', marginTop: '10px', marginBottom: '10px', background: 'rgba(255, 255, 255, 0.54)' }}>
-                    {loading ? (
-                        <div>Loading...</div> // Hiển thị khi đang tải dữ liệu
-                    ) : (
-                        <WrapperProducts>
-                            {products.length > 0 ? (
-                                products.map(product => (
-                                    <CardComponent key={product.id} product={product} />
-                                ))
-                            ) : (
-                                <div>Không có sản phẩm</div> // Thông báo nếu không có sản phẩm
-                            )}
-                        </WrapperProducts>
-                    )}
+                    {
+                        loading ? (
+                            <div>Loading...</div> // Hiển thị khi đang tải dữ liệu
+                        ) : (
+                            <WrapperProducts>
+                                {products.length > 0 ? (
+                                    products.map(product => (
+                                        <CardComponent key={product.id} product={product} />
+                                    ))
+                                ) : (
+                                    <div>Không có sản phẩm</div> // Thông báo nếu không có sản phẩm
+                                )}
+                            </WrapperProducts>
+                        )
+                    }
                     <WrapperPagination
                         current={currentPage}
                         total={100} // Bạn có thể lấy tổng số sản phẩm từ API nếu có

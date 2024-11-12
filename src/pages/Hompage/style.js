@@ -119,3 +119,10 @@ export const NeedSection = styled.div`
         background-color: rgba(255,255,255,0.7); /* Nền sáng hơn khi hover */
     }
 `;
+
+export const WrapperTitleProduct = styled.h2`
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 10px;
+    border-radius: 20px;
+`;
