@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   WrapperContainerLeft,
@@ -19,6 +19,7 @@ import * as UserService from '../../services/UserService';
 import { useMutationHooks } from '../../hook/useMutationHook';
 import { ArrowLeftOutlined, HeartOutlined } from '@ant-design/icons';
 import LoadingComponent from '../../components/LoadingComponent/LoadingComponent';
+import * as message from '../../components/Message/Message';
 
 const SigupPage = () => {
   const navigate = useNavigate();
@@ -32,7 +33,9 @@ const SigupPage = () => {
 
   const mutation = useMutationHooks(
     data => UserService.sigUpUser(data)
-  )
+  );
+
+  const { data, isSuccess, isError } = mutation;  // Đưa phần này lên trước khi sử dụng
 
   const handleOnchangeEmail = (value) => {
     setEmail(value);
@@ -51,8 +54,6 @@ const SigupPage = () => {
   }
   const handleSigup = () => {
     setIsLoading(true);
-
-    // Tự động tắt spinner sau 1 giây
     setTimeout(() => {
       setIsLoading(false);
     }, 1000);
@@ -69,18 +70,26 @@ const SigupPage = () => {
     });
   }
 
+  useEffect(() => {
+    if (isSuccess === true) {
+      message.success();
+      handleSignInClick();
+    } else if (isError) {
+      message.error();
+    }
+  }, [isSuccess, isError]);
+
   const handleSignInClick = () => {
-    setFlipped(true);  // Bắt đầu hiệu ứng lật
+    setFlipped(true);
     setTimeout(() => {
-      navigate('/sig-in');  // Điều hướng sau khi hiệu ứng kết thúc
-    }, 300);  // 500ms tương ứng với thời gian của hiệu ứng lật
+      navigate('/sig-in');
+    }, 300);
   };
+
   return (
     <WrapperOuterContainer>
       <WrapperCard flipped={flipped ? true : undefined}>
-
         <WrapperInnerContainer>
-
           <WrapperContainerRight>
             <WrapperImageContainer>
               <Image src={anhdk} preview={false} alt='anhdk' />
@@ -91,10 +100,9 @@ const SigupPage = () => {
             </WrapperImageContainer>
           </WrapperContainerRight>
           <WrapperContainerLeft>
-            <button onClick={handleSignInClick} style={{ background: 'none', border: 'none' }}>
+            <button onClick={handleSignInClick} style={{ border: 'black' }}>
               <ArrowLeftOutlined />
             </button>
-            <WrapperHeader>Xin chào</WrapperHeader>
             <h2>Đăng ký tài khoản</h2>
 
             <InputFormComponent placeholder='tên' value={name} onChange={handleOnchangeName} />
@@ -104,7 +112,7 @@ const SigupPage = () => {
             <InputFormComponent placeholder='conformpassword' type='password' value={confirmpassword} onChange={handleOnchangeConfirmPassword} />
 
             <WrapperLoginButton>
-              {mutation.data?.status === "ERR" && <span style={{ color: 'red' }}>{mutation.data?.message}</span>}
+              {data?.status === "ERR" && <span style={{ color: 'red' }}>{data?.message}</span>}
 
               <LoadingComponent isLoading={isLoading}>
                 <ButtonComponent
@@ -116,8 +124,7 @@ const SigupPage = () => {
                     height: '48px',
                     width: '500px',
                     marginTop: '20px',
-                    opacity: !email || !password || !name || !phone || !confirmpassword ? 0.5 : 1 // giảm độ trong suốt nếu thiếu email hoặc password
-
+                    opacity: !email || !password || !name || !phone || !confirmpassword ? 0.5 : 1
                   }}
                   textButton='Đăng ký'
                   styleTextButton={{ color: 'white' }}
@@ -141,3 +148,6 @@ const SigupPage = () => {
 };
 
 export default SigupPage;
+
+
+

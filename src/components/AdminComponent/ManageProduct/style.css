@@ -1,0 +1,15 @@
+.manage-product {
+  padding: 20px; /* Padding cho container */
+  background: rgba(255, 255, 255, 0.5); /* Màu nền cho container */
+  border-radius: 8px; /* Bo góc cho container */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng cho container */
+  margin: 50px auto; /* Căn giữa container */
+  max-width: 1200px; /* Đặt chiều rộng tối đa cho container */
+  width: 90%; /* Chiều rộng bằng 90% của màn hình */
+}
+
+.manage-product h2 {
+  font-weight: 600; /* Đậm cho tiêu đề */
+  margin-bottom: 20px; /* Khoảng cách dưới tiêu đề */
+  color: #1890ff; /* Màu sắc cho tiêu đề */
+}

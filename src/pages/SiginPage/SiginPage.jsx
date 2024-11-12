@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { WrapperContainerLeft, WrapperContainerRight, WrapperTextLight, WrapperLoginButton, WrapperOuterContainer, WrapperInnerContainer, WrapperImageContainer, WrapperHeader, WrapperCard } from './style';
 import InputFormComponent from '../../components/InputFormComponent/InputFormComponent';
@@ -10,13 +10,48 @@ import { ArrowLeftOutlined, HeartOutlined } from '@ant-design/icons';
 import * as UserService from '../../services/UserService';
 import { useMutationHooks } from '../../hook/useMutationHook';
 import LoadingComponent from '../../components/LoadingComponent/LoadingComponent';
+import * as message from '../../components/Message/Message';
+import { jwtDecode } from 'jwt-decode';
+import { useDispatch } from 'react-redux';
+import { updateUser } from '../../redux/slices/userSlide';
+
 const SiginPage = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     const mutation = useMutationHooks(
         data => UserService.loginUser(data)
-    )
+    );
     const [isLoading, setIsLoading] = useState(false);
-    const { data } = mutation;
+    const { data, isSuccess, isError } = mutation;  // Đưa phần này lên trước khi sử dụng
+
+    useEffect(() => {
+        if (isSuccess) {
+            message.success();
+            localStorage.setItem('access_token', JSON.stringify(data?.access_token));
+            if (data?.access_token) {
+                const decode = jwtDecode(data?.access_token);
+                if (decode?.id) {
+                    handLeGetDetailsUser(decode?.id, data?.access_token);
+
+                    // Kiểm tra quyền admin và điều hướng đến trang tương ứng
+                    if (decode?.isAdmin === true) {
+                        navigate('/admin');
+                    } else {
+                        navigate('/');
+                    }
+                }
+            }
+        } else if (isError) {
+            message.error();
+        }
+    }, [isSuccess, isError, data, navigate]);
+
+    const handLeGetDetailsUser = async (id, token) => {
+        const res = await UserService.getDetailsUser(id, token);
+        dispatch(updateUser({ ...res?.data, access_token: token }));
+    };
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [flipped, setFlipped] = useState(false);
@@ -27,18 +62,22 @@ const SiginPage = () => {
             navigate('/sig-up');  // Điều hướng sau khi hiệu ứng kết thúc
         }, 300);  // 500ms tương ứng với thời gian của hiệu ứng lật
     };
+
     const handleBackHome = () => {
         setFlipped(true);  // Bắt đầu hiệu ứng lật
         setTimeout(() => {
             navigate('/');  // Điều hướng sau khi hiệu ứng kết thúc
         }, 300);  // 500ms tương ứng với thời gian của hiệu ứng lật
     };
+
     const handleOnchangeEmail = (value) => {
         setEmail(value);
-    }
+    };
+
     const handleOnchangePassword = (value) => {
         setPassword(value);
-    }
+    };
+
     const handleSigin = () => {
         setIsLoading(true); // Bắt đầu hiển thị spinner
 
@@ -52,16 +91,14 @@ const SiginPage = () => {
             email,
             password
         });
+    };
 
-        console.log(email, password);
-    }
     return (
         <WrapperOuterContainer>
             <WrapperCard flipped={flipped ? true : undefined}>
-
                 <WrapperInnerContainer>
                     <WrapperContainerLeft>
-                        <button onClick={handleBackHome} style={{ background: 'none', border: 'none' }}>
+                        <button onClick={handleBackHome} style={{ border: 'black' }}>
                             <ArrowLeftOutlined />
                         </button>
                         <WrapperHeader>Xin chào</WrapperHeader>
@@ -85,11 +122,10 @@ const SiginPage = () => {
                                     textButton='Đăng nhập'
                                     styleTextButton={{ color: 'white' }}
                                 />
-
                             </LoadingComponent>
                         </WrapperLoginButton>
                         <p><WrapperTextLight>Quên mật khẩu ?</WrapperTextLight></p>
-                        <p>chưa có tài khoản    <button onClick={handleSignUpClick} style={{ border: 'none', background: 'none', cursor: 'pointer' }}><WrapperTextLight>Tạo tài khoản</WrapperTextLight></button></p>
+                        <p>chưa có tài khoản <button onClick={handleSignUpClick} style={{ border: 'none', background: 'none', cursor: 'pointer' }}><WrapperTextLight>Tạo tài khoản</WrapperTextLight></button></p>
                     </WrapperContainerLeft>
                     <WrapperContainerRight>
                         <WrapperImageContainer>

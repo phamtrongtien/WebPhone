@@ -74,7 +74,7 @@
 
 // export default NavBarComponent;
 import React, { useState } from 'react';
-import { WrapperContent, WrapperLableText, WrapperTextPrice, WrapperTextValue } from './style';
+import { WrapperContent, WrapperLableText, WrapperNavbar, WrapperTextPrice, WrapperTextValue } from './style';
 import { Checkbox, Rate } from 'antd';
 
 const desc = ['terrible', 'bad', 'normal', 'good', 'wonderful'];
@@ -107,7 +107,7 @@ const NavBarComponent = () => {
     };
 
     return (
-        <div style={{ backgroundColor: 'white' }}>
+        <WrapperNavbar>
             {['text', 'checkbox', 'star', 'price'].map((type, i) => (
                 <React.Fragment key={i}>
                     <WrapperLableText>Label{i + 1}</WrapperLableText>
@@ -124,7 +124,7 @@ const NavBarComponent = () => {
                     </WrapperContent>
                 </React.Fragment>
             ))}
-        </div>
+        </WrapperNavbar>
     );
 };
 

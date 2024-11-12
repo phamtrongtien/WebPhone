@@ -24,3 +24,10 @@ border-radius: '10px';
   background-color: 'silver';
     width: 'fit-content' ;
 `
+export const WrapperNavbar = styled.div`
+  padding: 10px;
+  position: relative;
+  top:10px;
+  background: rgba(255, 255, 255, 0.5); /* Đặt màu nền với độ mờ */
+  border-radius: 20px;
+`;

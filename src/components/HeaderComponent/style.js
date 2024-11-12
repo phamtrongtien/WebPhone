@@ -2,7 +2,7 @@ import { Row } from "antd";
 import styled from "styled-components"
 export const Wrapperheader = styled(Row)`
     padding: 10px 120px;
-    background-color: white;
+background: rgba(255, 255, 255, 0.6);
     align-items: center;
     gap: 16px;
     flex-wrap: nowrap;

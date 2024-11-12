@@ -6,6 +6,9 @@ import TypeProductPage from "../pages/TypeProductPage/TypeProductPage"
 import SiginPage from "../pages/SiginPage/SiginPage"
 import SigupPage from "../pages/SigupPage/SigupPage"
 import ProductDetailPage from "../pages/ProductDetailPage/ProductDetailPage"
+import AdminPage from "../pages/AdminPage/AdminPage"
+import ProfileUserPage from "../pages/ProfileUserPage/ProfileUserPage"
+
 
 export const routes = [
     {
@@ -50,6 +53,17 @@ export const routes = [
 
         isShowHeader: true
     },
+    {
+        path: '/profile-user',
+        page: ProfileUserPage,
+        isShowHeader: true
+    },
+    {
+        path: '/admin',
+        page: AdminPage,
+        isPrivate: true
+    },
+
     {
         path: '*',
         page: NoteFoundPage
