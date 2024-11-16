@@ -6,6 +6,7 @@ import Sidebar from '../../components/AdminComponent/Sidebar';
 import ManageOrder from '../../components/AdminComponent/ManageOrder/ManageOrder'; // Import ManageOrder
 import ManageCustomer from '../../components/AdminComponent/ManageCustomer/ManageCustomer'; // Import ManageCustomer
 import ManageProduct from '../../components/AdminComponent/ManageProduct/ManagaProduct';
+import HeaderComponent from '../../components/HeaderComponent/HeaderComponent';
 
 function AdminPage() {
     const [activeComponent, setActiveComponent] = useState(null); // State để kiểm soát component đang hiển thị

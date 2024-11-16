@@ -2,10 +2,12 @@ import React from "react";
 import Cards from "../Cards/Cards";
 import Table from "../Table/Table";
 import "./MainDash.css";
+import HeaderComponent from "../../HeaderComponent/HeaderComponent";
 const MainDash = () => {
   return (
     <div className="MainDash">
-      <h1>Dashboard</h1>
+      <HeaderComponent isHidenCart isAdminPage isName />
+
       <Cards />
       <Table />
     </div>

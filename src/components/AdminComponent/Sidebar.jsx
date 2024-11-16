@@ -33,7 +33,7 @@ const Sidebar = ({ setActiveComponent }) => { // Nhận setActiveComponent từ 
       <motion.div className='sidebar'
         animate={window.innerWidth <= 768 ? `${expanded}` : ''}>
         {/* Logo */}
-        <div className="logo">
+        <div className="logo" style={{ marginLeft: '10px' }}>
           <img src={Logo} alt="logo" />
           <span>
             Sh<span>o</span>ps

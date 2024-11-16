@@ -33,13 +33,13 @@ const SiginPage = () => {
                 const decode = jwtDecode(data?.access_token);
                 if (decode?.id) {
                     handLeGetDetailsUser(decode?.id, data?.access_token);
-
-                    // Kiểm tra quyền admin và điều hướng đến trang tương ứng
-                    if (decode?.isAdmin === true) {
-                        navigate('/admin');
-                    } else {
-                        navigate('/');
-                    }
+                    navigate('/');
+                    // // Kiểm tra quyền admin và điều hướng đến trang tương ứng
+                    // if (decode?.isAdmin === true) {
+                    //     navigate('/admin');
+                    // } else {
+                    //     navigate('/');
+                    // }
                 }
             }
         } else if (isError) {
