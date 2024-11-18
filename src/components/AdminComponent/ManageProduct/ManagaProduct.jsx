@@ -1,198 +1,269 @@
-import React, { useState } from 'react';
-import { Table, Button, Input, Modal, Form } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Modal, Form, Input, InputNumber, Upload, message } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import './style.css';
+import { getBase64 } from '../../../utils';
+import * as ProductService from '../../../services/ProductService';
+import { useMutationHooks } from '../../../hook/useMutationHook';
+import * as messagel from '../../Message/Message';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
+import Tablecomponent from '../../tableComponent/Tablecomponent';
+import { useSelector } from 'react-redux';
 
 const ManageProduct = () => {
-    const initialProducts = [
-        {
-            key: '1',
-            id: '001',
-            name: 'Apple iPhone 13',
-            image: 'https://example.com/iphone_13.jpg',
-            type: 'Smartphone',
-            price: 999,
-            countInStock: 50,
-            rating: 4.8,
-            description: 'iPhone 13 with A15 Bionic chip and Super Retina XDR display.',
-            discount: 10,
-            selled: 500,
-            status: 'Available'
-        },
-        {
-            key: '2',
-            id: '002',
-            name: 'Samsung Galaxy S21',
-            image: 'https://example.com/galaxy_s21.jpg',
-            type: 'Smartphone',
-            price: 799,
-            countInStock: 80,
-            rating: 4.5,
-            description: 'Samsung Galaxy S21 with Exynos 2100 and Dynamic AMOLED display.',
-            discount: 15,
-            selled: 1000,
-            status: 'Available'
-        },
-    ];
-
-    const [stateProduct, setStateProduct] = useState({
-        name: '',
-        image: '',
-        type: '',
-        price: '',
-        countInStock: '',
-        rating: '',
-        description: '',
-        discount: '',
-        selled: '',
-        status: ''
-    });
-
-    const [products, setProducts] = useState(initialProducts);
+    const user = useSelector((state) => state.user);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [currentProduct, setCurrentProduct] = useState(null);
     const [form] = Form.useForm();
+    const [stateProduct, setStateProduct] = useState({
+        name: '',
+        type: '',
+        price: null,
+        countInStock: null,
+        rating: null,
+        description: '',
+        discount: null,
+        selled: null,
+        image: ''
+    });
 
-    const columns = [
-        {
-            title: 'ID Sản phẩm',
-            dataIndex: 'id',
-            key: 'id',
-        },
-        {
-            title: 'Tên sản phẩm',
-            dataIndex: 'name',
-            key: 'name',
-        },
-        {
-            title: 'Hình ảnh',
-            dataIndex: 'image',
-            key: 'image',
-            render: (image) => <img src={image} alt="product" style={{ width: '50px', height: '50px', objectFit: 'cover' }} />,
-        },
-        {
-            title: 'Loại',
-            dataIndex: 'type',
-            key: 'type',
-        },
-        {
-            title: 'Giá',
-            dataIndex: 'price',
-            key: 'price',
-            render: (price) => `$${price}`,
-        },
-        {
-            title: 'Giảm giá (%)',
-            dataIndex: 'discount',
-            key: 'discount',
-        },
-        {
-            title: 'Số lượng còn',
-            dataIndex: 'countInStock',
-            key: 'countInStock',
-        },
-        {
-            title: 'Đã bán',
-            dataIndex: 'selled',
-            key: 'selled',
-        },
-        {
-            title: 'Xếp hạng',
-            dataIndex: 'rating',
-            key: 'rating',
-        },
-        {
-            title: 'Hành động',
-            key: 'action',
-            render: (_, record) => (
-                <>
-                    <Button type="link" onClick={() => editProduct(record)}>Chỉnh sửa</Button>
-                    <Button type="link" danger onClick={() => deleteProduct(record.key)}>Xóa</Button>
-                </>
-            ),
-        },
-    ];
+    const queryClient = useQueryClient();  // Khai báo queryClient
 
-    const editProduct = (product) => {
-        setCurrentProduct(product);
-        form.setFieldsValue(product);
-        setIsModalVisible(true);
+    const mutation = useMutationHooks((data) => ProductService.createProduct(data));
+    const { data, isSuccess, isError } = mutation;
+
+    useEffect(() => {
+        if (isSuccess && data?.status === "OK") {
+            messagel.success();
+            handleCancel();
+        } else if (isError) {
+            messagel.error();
+        }
+    }, [isSuccess, data]);
+
+    const getAllProduct = async () => {
+        const res = await ProductService.getProductAll();
+        return res;
     };
 
-    const deleteProduct = (key) => {
-        setProducts(products.filter(product => product.key !== key));
+    const { isLoading: isLoadingProduct, data: products } = useQuery({
+        queryKey: ['products'],
+        queryFn: getAllProduct
+    });
+
+    const oneFinish = async () => {
+        try {
+            if (currentProduct) {
+                // Cập nhật sản phẩm
+                await ProductService.updateProduct(currentProduct._id, stateProduct, user.access_token);
+                message.success('Sản phẩm đã được cập nhật thành công!');
+            } else {
+                // Thêm sản phẩm mới
+                await mutation.mutateAsync(stateProduct);
+                message.success('Sản phẩm đã được thêm thành công!');
+            }
+
+            // Làm mới danh sách sản phẩm sau khi thêm hoặc cập nhật
+            queryClient.invalidateQueries(['products']);
+
+            setIsModalVisible(false);
+            form.resetFields();
+            setCurrentProduct(null);
+        } catch (error) {
+            message.error('Có lỗi xảy ra!');
+        }
     };
 
-    // Handle input changes for form fields
-    const handleOnChange = (e) => {
-        const { name, value } = e.target;
-        setStateProduct((prevState) => ({
-            ...prevState,
-            [name]: value
-        }));
-    };
-    const onFinish = () => {
-
-    }
     const handleOk = () => {
-        form
-            .validateFields()
-            .then(values => {
-                if (currentProduct) {
-                    setProducts(products.map(product => (product.key === currentProduct.key ? { ...product, ...values } : product)));
-                } else {
-                    setProducts([...products, { key: Date.now(), ...values }]);
-                }
-                setIsModalVisible(false);
-                form.resetFields();
-                setCurrentProduct(null);
-            })
-            .catch(info => {
-                console.log('Validate Failed:', info);
-            });
+        form.submit();
     };
 
     const handleCancel = () => {
         setIsModalVisible(false);
+        setStateProduct({
+            name: '',
+            type: '',
+            price: null,
+            countInStock: null,
+            rating: null,
+            description: '',
+            discount: null,
+            selled: null,
+            image: ''
+        });
         form.resetFields();
         setCurrentProduct(null);
     };
 
+    const handleDeleteProduct = async (productId) => {
+        try {
+            await ProductService.deleteProduct(productId._id, user.access_token);
+            message.success('Sản phẩm đã được xóa thành công!');
+
+            // Làm mới danh sách sản phẩm sau khi xóa
+            queryClient.invalidateQueries(['products']);
+        } catch (error) {
+            message.error('Có lỗi xảy ra khi xóa sản phẩm!');
+        }
+    };
+
+    const handleOnChangeAvatar = async ({ fileList }) => {
+        const file = fileList[0];
+        if (file) {
+            if (!file.url && !file.preview) {
+                try {
+                    file.preview = await getBase64(file.originFileObj);
+                } catch (error) {
+                    console.error('Lỗi khi chuyển đổi file sang base64:', error);
+                }
+            }
+            setStateProduct({
+                ...stateProduct,
+                image: file.preview || file.url
+            });
+        }
+    };
+
+    const handleOnChange = (value, name) => {
+        setStateProduct({
+            ...stateProduct,
+            [name]: value,
+        });
+    };
+
+    const handleEditProduct = (product) => {
+        setCurrentProduct(product);
+        setStateProduct({
+            name: product.name,
+            type: product.type,
+            price: product.price,
+            countInStock: product.countInStock,
+            rating: product.rating,
+            description: product.description,
+            discount: product.discount,
+            selled: product.selled,
+            image: product.image
+        });
+        setIsModalVisible(true);
+        form.setFieldsValue({
+            name: product.name,
+            type: product.type,
+            price: product.price,
+            countInStock: product.countInStock,
+            rating: product.rating,
+            description: product.description,
+            discount: product.discount,
+            selled: product.selled,
+            image: product.image
+        });
+    };
+
     return (
         <div className="manage-product">
-            <h2>Quản Lý Sản Phẩm</h2>
-            <Button type="primary" onClick={() => setIsModalVisible(true)}>
-                Thêm Sản Phẩm
-            </Button>
-            <Table columns={columns} dataSource={products} style={{ marginTop: 20 }} />
+            <div>
+                <h2>Quản Lý Sản Phẩm</h2>
+                <Button type="primary" onClick={() => setIsModalVisible(true)}>
+                    Thêm Sản Phẩm
+                </Button>
+            </div>
 
-            <Modal title={currentProduct ? 'Chỉnh Sửa Sản Phẩm' : 'Thêm Sản Phẩm'} visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
-                <Form form={form} layout="vertical">
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Tablecomponent
+                    products={products?.data}
+                    isLoadingProduct={isLoadingProduct}
+                    onEditProduct={handleEditProduct}
+                    onDeleteProduct={handleDeleteProduct}
+                />
+            </div>
+
+            <Modal
+                title={currentProduct ? 'Chỉnh Sửa Sản Phẩm' : 'Thêm Sản Phẩm'}
+                visible={isModalVisible}
+                onOk={handleOk}
+                onCancel={handleCancel}
+                footer={[
+                    <Button key="cancel" onClick={handleCancel}>
+                        Hủy
+                    </Button>,
+                    <Button key="submit" type="primary" onClick={handleOk}>
+                        Submit
+                    </Button>,
+                ]}
+            >
+                <Form form={form} layout="vertical" onFinish={oneFinish} autoComplete="off">
                     <Form.Item name="name" label="Tên sản phẩm" rules={[{ required: true, message: 'Vui lòng nhập tên sản phẩm!' }]}>
-                        <Input value={stateProduct.name} onChange={handleOnChange} name="name" />
+                        <Input name="name" value={stateProduct.name} onChange={(e) => handleOnChange(e.target.value, 'name')} />
                     </Form.Item>
-                    <Form.Item name="image" label="Hình ảnh (URL)" rules={[{ required: true, message: 'Vui lòng nhập đường dẫn hình ảnh!' }]}>
-                        <Input value={stateProduct.image} onChange={handleOnChange} name="image" />
+                    <Form.Item name="image" label="Hình ảnh" rules={[{ required: true, message: 'Vui lòng nhập ảnh sản phẩm!' }]}>
+                        <Upload
+                            maxCount={1}
+                            listType="picture-circle"
+                            onChange={handleOnChangeAvatar}
+                        >
+                            {stateProduct.image ? (
+                                <img
+                                    src={stateProduct.image}
+                                    alt="avatar"
+                                    style={{ borderRadius: '50%', width: '100px', height: '100px', objectFit: 'cover' }}
+                                />
+                            ) : (
+                                <div>
+                                    <PlusOutlined />
+                                    <div style={{ marginTop: 8 }}>Upload</div>
+                                </div>
+                            )}
+                        </Upload>
                     </Form.Item>
                     <Form.Item name="type" label="Loại sản phẩm" rules={[{ required: true, message: 'Vui lòng nhập loại sản phẩm!' }]}>
-                        <Input value={stateProduct.type} onChange={handleOnChange} name="type" />
+                        <Input name="type" value={stateProduct.type} onChange={(e) => handleOnChange(e.target.value, 'type')} />
                     </Form.Item>
                     <Form.Item name="price" label="Giá" rules={[{ required: true, message: 'Vui lòng nhập giá sản phẩm!' }]}>
-                        <Input value={stateProduct.price} onChange={handleOnChange} name="price" type="number" />
+                        <InputNumber
+                            name="price"
+                            value={stateProduct.price}
+                            onChange={(value) => handleOnChange(value, 'price')}
+                            style={{ width: '100%' }}
+                        />
                     </Form.Item>
-                    <Form.Item name="discount" label="Giảm giá (%)" rules={[{ required: true, message: 'Vui lòng nhập mức giảm giá!' }]}>
-                        <Input value={stateProduct.discount} onChange={handleOnChange} name="discount" type="number" />
+                    <Form.Item name="countInStock" label="Số lượng" rules={[{ required: true, message: 'Vui lòng nhập số lượng sản phẩm!' }]}>
+                        <InputNumber
+                            name="countInStock"
+                            value={stateProduct.countInStock}
+                            onChange={(value) => handleOnChange(value, 'countInStock')}
+                            style={{ width: '100%' }}
+                        />
                     </Form.Item>
-                    <Form.Item name="countInStock" label="Số lượng trong kho" rules={[{ required: true, message: 'Vui lòng nhập số lượng còn!' }]}>
-                        <Input value={stateProduct.countInStock} onChange={handleOnChange} name="countInStock" type="number" />
+                    <Form.Item name="rating" label="Đánh giá">
+                        <InputNumber
+                            name="rating"
+                            value={stateProduct.rating}
+                            onChange={(value) => handleOnChange(value, 'rating')}
+                            style={{ width: '100%' }}
+                        />
                     </Form.Item>
-                    <Form.Item name="selled" label="Đã bán" rules={[{ required: true, message: 'Vui lòng nhập số lượng đã bán!' }]}>
-                        <Input value={stateProduct.selled} onChange={handleOnChange} name="selled" type="number" />
+                    <Form.Item name="discount" label="Giảm giá">
+                        <InputNumber
+                            name="discount"
+                            value={stateProduct.discount}
+                            onChange={(value) => handleOnChange(value, 'discount')}
+                            style={{ width: '100%' }}
+                        />
                     </Form.Item>
-                    <Form.Item name="rating" label="Xếp hạng" rules={[{ required: true, message: 'Vui lòng nhập xếp hạng!' }]}>
-                        <Input value={stateProduct.rating} onChange={handleOnChange} name="rating" type="number" step="0.1" />
+                    <Form.Item name="selled" label="Đã bán">
+                        <InputNumber
+                            name="selled"
+                            value={stateProduct.selled}
+                            onChange={(value) => handleOnChange(value, 'selled')}
+                            style={{ width: '100%' }}
+                        />
                     </Form.Item>
-                    <Form.Item name="description" label="Mô tả" rules={[{ required: true, message: 'Vui lòng nhập mô tả!' }]}>
-                        <Input.TextArea value={stateProduct.description} onChange={handleOnChange} name="description" rows={4} />
+                    <Form.Item name="description" label="Mô tả">
+                        <Input.TextArea
+                            name="description"
+                            value={stateProduct.description}
+                            onChange={(e) => handleOnChange(e.target.value, 'description')}
+                            rows={4}
+                        />
                     </Form.Item>
                 </Form>
             </Modal>

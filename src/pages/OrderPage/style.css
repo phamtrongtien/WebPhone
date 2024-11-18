@@ -1,0 +1,77 @@
+/* OrderPage.css */
+
+.order-page {
+  padding: 30px;
+  background-color: #f7f7f7;
+}
+
+.page-title {
+  text-align: center;
+  color: #1d3557;
+}
+
+.order-card {
+  background-color: #fff;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.order-table {
+  margin-bottom: 20px;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quantity {
+  margin: 0 10px;
+  font-weight: bold;
+}
+
+.undo-delete {
+  margin-top: 10px;
+  text-align: right;
+}
+
+.order-details-card {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.address-input,
+.payment-method-select {
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.total-price {
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.confirm-button {
+  width: 100%;
+  background-color: #1d3557;
+  border: none;
+  font-size: 16px;
+}
+
+.confirm-button:hover {
+  background-color: #457b9d;
+}
+
+.ant-btn-danger {
+  background-color: #e63946;
+  border-color: #e63946;
+}
+
+.ant-btn-danger:hover {
+  background-color: #d62828;
+  border-color: #d62828;
+}

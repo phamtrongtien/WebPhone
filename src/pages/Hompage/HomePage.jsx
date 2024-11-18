@@ -19,17 +19,39 @@ const HomePage = () => {
     const navigate = useNavigate();
     const [showAd, setShowAd] = useState(true);
 
-    // Hàm fetch sản phẩm
-    const fetchProductAll = async () => {
+    // Hàm fetch sản phẩm mới (8 sản phẩm mới nhất)
+    const fetchNewProducts = async () => {
         const response = await ProductService.getProductAll();
-        return response.data; // Giả sử API trả về { data: [...] }
+        const newProducts = response.data.sort((a, b) => b.id - a.id).slice(0, 8); // Sắp xếp theo id giảm dần và lấy 8 sản phẩm đầu tiên
+        return newProducts;
     };
 
-    const { data, isLoading, error, refetch } = useQuery({
-        queryKey: ['product'],
-        queryFn: fetchProductAll,
-        refetchOnWindowFocus: true,  // Tự động làm mới khi người dùng quay lại trang
-        refetchInterval: 60000, // Làm mới mỗi phút (60 giây)
+    // Hàm fetch sản phẩm bán chạy (8 sản phẩm có lượt bán nhiều nhất)
+    const fetchBestSellingProducts = async () => {
+        const response = await ProductService.getProductAll();
+        const bestSellingProducts = response.data.sort((a, b) => b.sales - a.sales).slice(0, 8); // Sắp xếp theo lượt bán giảm dần
+        return bestSellingProducts;
+    };
+
+    // Hàm fetch sản phẩm đánh giá tốt nhất (4 sản phẩm có rating cao nhất)
+    const fetchTopRatedProducts = async () => {
+        const response = await ProductService.getProductAll();
+        const topRatedProducts = response.data.sort((a, b) => b.rating - a.rating).slice(0, 4); // Sắp xếp theo rating giảm dần
+        return topRatedProducts;
+    };
+
+    // Fetch các sản phẩm
+    const { data: newProducts, isLoading: isLoadingNew, error: errorNew } = useQuery({
+        queryKey: ['newProducts'],
+        queryFn: fetchNewProducts
+    });
+    const { data: bestSellingProducts, isLoading: isLoadingBestSelling, error: errorBestSelling } = useQuery({
+        queryKey: ['bestSellingProducts'],
+        queryFn: fetchBestSellingProducts
+    });
+    const { data: topRatedProducts, isLoading: isLoadingTopRated, error: errorTopRated } = useQuery({
+        queryKey: ['topRatedProducts'],
+        queryFn: fetchTopRatedProducts
     });
 
     // Xử lý khi người dùng đóng quảng cáo
@@ -47,8 +69,8 @@ const HomePage = () => {
         navigate(`/product-detail/${id}`);
     };
 
-    if (isLoading) return <div>Đang tải...</div>;
-    if (error) return <div>Lỗi: {error.message}</div>;
+    if (isLoadingNew || isLoadingBestSelling || isLoadingTopRated) return <div>Đang tải...</div>;
+    if (errorNew || errorBestSelling || errorTopRated) return <div>Lỗi: {errorNew?.message || errorBestSelling?.message || errorTopRated?.message}</div>;
 
     return (
         <>
@@ -70,11 +92,39 @@ const HomePage = () => {
                     {/* Slider */}
                     <SliderComponent arrImages={[slider1, slider2, slider3, slider4]} />
 
+                    {/* Sản phẩm mới */}
                     <NeedSection>
-                        {/* Sản phẩm mới */}
                         <SectionTitle>🌟 Sản Phẩm Mới</SectionTitle>
                         <CardsContainer>
-                            {data?.map((product) => (
+                            {newProducts?.map((product) => (
+                                <CardComponent
+                                    key={product.id}
+                                    product={product}
+                                    onClick={() => handleProductDetail(product.id)}
+                                />
+                            ))}
+                        </CardsContainer>
+                    </NeedSection>
+
+                    {/* Sản phẩm bán chạy */}
+                    <NeedSection>
+                        <SectionTitle>🔥 Sản Phẩm Bán Chạy</SectionTitle>
+                        <CardsContainer>
+                            {bestSellingProducts?.map((product) => (
+                                <CardComponent
+                                    key={product.id}
+                                    product={product}
+                                    onClick={() => handleProductDetail(product.id)}
+                                />
+                            ))}
+                        </CardsContainer>
+                    </NeedSection>
+
+                    {/* Sản phẩm được đánh giá tốt nhất */}
+                    <NeedSection>
+                        <SectionTitle>⭐ Sản Phẩm Được Đánh Giá Tốt Nhất</SectionTitle>
+                        <CardsContainer>
+                            {topRatedProducts?.map((product) => (
                                 <CardComponent
                                     key={product.id}
                                     product={product}
@@ -85,6 +135,7 @@ const HomePage = () => {
                     </NeedSection>
 
                 </div>
+
                 <div className="see-more">
                     <WrapperButtonMore onClick={handleCategory} textButton="Xem thêm" type="outline" styleTextButton={{ fontWeight: '500' }} />
                 </div>

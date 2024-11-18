@@ -1,0 +1,17 @@
+/* Thêm padding 0 cho tất cả các ô trong bảng */
+.ant-table {
+  width: 1200px !important;
+}
+.ant-table-cell {
+  padding: 5px !important;
+}
+/* Tăng kích thước biểu tượng sắp xếp trong Ant Design */
+.ant-table-column-sorter .ant-table-column-sorter-up,
+.ant-table-column-sorter .ant-table-column-sorter-down {
+  font-size: 20px; /* Tăng kích thước biểu tượng */
+}
+
+/* Tùy chỉnh cột để tạo sự tương phản cho các biểu tượng */
+.ant-table-column-sorter {
+  font-size: 18px; /* Cột này cũng có thể thay đổi kích thước font */
+}

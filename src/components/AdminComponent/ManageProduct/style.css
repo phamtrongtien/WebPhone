@@ -1,10 +1,10 @@
 .manage-product {
-  padding: 20px; /* Padding cho container */
+  padding: 10px 70px;
   background: rgba(255, 255, 255, 0.5); /* Màu nền cho container */
   border-radius: 8px; /* Bo góc cho container */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng cho container */
-  margin: 50px auto; /* Căn giữa container */
-  max-width: 1200px; /* Đặt chiều rộng tối đa cho container */
+  margin: 50px; /* Căn giữa container */
+  width: 2000px; /* Đặt chiều rộng tối đa cho container */
   width: 90%; /* Chiều rộng bằng 90% của màn hình */
 }
 
