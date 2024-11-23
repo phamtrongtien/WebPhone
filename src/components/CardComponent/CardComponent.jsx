@@ -7,14 +7,14 @@ import { useNavigate } from 'react-router-dom';
 const CardComponent = ({ product }) => {
     const navigate = useNavigate();
 
-    const handleCardDetail = () => {
-        // Dẫn đến trang chi tiết sản phẩm theo ID của sản phẩm
-        navigate(`/product-detail/${product.id}`);
+    // Function to navigate to the product detail page
+    const handleCardDetail = (id) => {
+        navigate(`/product/${id}`);
     };
 
     return (
         <WrapperCardStyle
-            onClick={handleCardDetail}
+            onClick={() => handleCardDetail(product._id)}  // Call the function on click
             hoverable
             style={{ width: '180px', position: 'relative' }}
             cover={<img alt={product.name} src={product.image} />}

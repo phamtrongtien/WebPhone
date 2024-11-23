@@ -69,3 +69,32 @@ export const updateUser = async (id, data, access_token) => {
         throw error;
     }
 };
+export const getAllUsers = async (access_token) => {
+    try {
+        const response = await axiosJWT.get(`${process.env.REACT_APP_API_URL_BACKEND}/user/getALL`,
+            {
+                headers: {
+                    token: `Bearer ${access_token}`
+                }
+            }
+        ); // Sửa đường dẫn URL API
+        return response.data;
+    } catch (error) {
+        console.error('Lỗi khi cập nhật:', error);
+        throw error;
+    }
+};
+
+export const deleteUser = async (id, access_token) => {
+    try {
+        const res = await axios.delete(`${process.env.REACT_APP_API_URL_BACKEND}/user/delete-user/${id}`, {
+            headers: {
+                token: `Bearer ${access_token}`
+            }
+        });
+        return res.data
+    } catch (error) {
+        console.error('Error fetching user details:', error.response ? error.response.data : error.message);
+        throw error;
+    }
+}
