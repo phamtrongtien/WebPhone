@@ -50,9 +50,18 @@ const ManageProduct = () => {
         queryKey: ['products'],
         queryFn: getAllProduct
     });
-
     const oneFinish = async () => {
         try {
+            // Kiểm tra trùng tên sản phẩm
+            const isDuplicate = products?.data.some(
+                (product) => product.name.toLowerCase() === stateProduct.name.toLowerCase()
+            );
+
+            if (isDuplicate) {
+                message.error('Sản phẩm đã tồn tại!');
+                return;
+            }
+
             if (currentProduct) {
                 // Cập nhật sản phẩm
                 await ProductService.updateProduct(currentProduct._id, stateProduct, user.access_token);
@@ -73,6 +82,7 @@ const ManageProduct = () => {
             message.error('Có lỗi xảy ra!');
         }
     };
+
 
     const handleOk = () => {
         form.submit();

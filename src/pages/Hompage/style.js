@@ -18,7 +18,7 @@ export const HomePageContainer = styled.div`
 
 // Phần banner khuyến mãi
 export const PromoBanner = styled.div`
-    background: #00c6ff;
+    background-color: rgba(0, 198, 255,0.5);
     color: #fff; /* Màu xanh sáng cho văn bản */
     padding: 20px;
     text-align: center;
@@ -39,11 +39,12 @@ export const WrapperTypeProduct = styled.div`
     display: flex;
     justify-content: space-evenly;
     gap: 24px;
-    height: 60px;
+    /* height: 60px; */
     background: #fff; /* Nền trắng */
     padding: 15px;
     margin: 20px 0;
     border-radius: 20px;
+    background: rgba(255, 255, 255, 0.5);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
     transition: box-shadow 0.3s ease-in-out;
 

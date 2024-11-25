@@ -21,6 +21,7 @@ const HomePage = () => {
     const [showAd, setShowAd] = useState(true);
     const [stateProduct, setStateProduct] = useState([]);
     const refSearch = useRef(false); // Dùng để kiểm soát lần render đầu tiên
+    const [typeProduct, setTypeProduct] = useState([]);
 
     // Fetch toàn bộ sản phẩm hoặc theo từ khóa tìm kiếm
     const fetchAllProduct = async (search = '') => {
@@ -45,7 +46,16 @@ const HomePage = () => {
         const response = await ProductService.getProductAll();
         return response.data.sort((a, b) => b.rating - a.rating).slice(0, 4); // Sắp xếp theo rating giảm dần
     };
+    const fetchAllTypeProduct = async () => {
+        const response = await ProductService.getAllType();
+        if (response.status === 'OK') {
+            setTypeProduct(response.data)
 
+        }
+    }
+    useEffect(() => {
+        fetchAllTypeProduct();
+    }, [])
     // useEffect để theo dõi thay đổi từ Redux state searchProduct
     useEffect(() => {
         if (refSearch.current) {
@@ -94,7 +104,7 @@ const HomePage = () => {
 
                 {/* Loại sản phẩm */}
                 <WrapperTypeProduct>
-                    {['TV', 'Tủ Lạnh', 'Laptop'].map((item) => (
+                    {typeProduct.map((item) => (
                         <TypeProduct name={item} key={item} />
                     ))}
                 </WrapperTypeProduct>
