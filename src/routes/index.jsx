@@ -48,7 +48,7 @@ export const routes = [
 
     },
     {
-        path: '/product/:id',  // Use dynamic parameter ':id' in the route
+        path: '/product/details/:id',  // Use dynamic parameter ':id' in the route
         page: ProductDetailPage,
         isShowHeader: true
     }

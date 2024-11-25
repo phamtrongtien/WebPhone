@@ -71,16 +71,16 @@ const OrderPage = () => {
                 <Col xs={24} lg={16}>
                     <Card className="order-card">
                         <Table dataSource={orderData} pagination={false} rowKey="key" className="order-table">
-                            <Table.Column title="Sản phẩm" dataIndex="product" />
-                            <Table.Column title="Số lượng" render={(text, record) => (
+                            <Table.Column title="Sản phẩm" dataIndex="product" width={100} />
+                            <Table.Column width={70} title="Số lượng" render={(text, record) => (
                                 <div className="quantity-controls">
                                     <Button icon={<MinusOutlined />} onClick={() => decreaseQuantity(record.key)} disabled={record.quantity <= 1} />
                                     <span className="quantity">{record.quantity}</span>
                                     <Button icon={<PlusOutlined />} onClick={() => increaseQuantity(record.key)} />
                                 </div>
                             )} />
-                            <Table.Column title="Giá" dataIndex="price" render={(text) => `${text} đ`} />
-                            <Table.Column title="Tổng" render={(text, record) => `${record.price * record.quantity} đ`} />
+                            <Table.Column title="Giá" width={70} dataIndex="price" render={(text) => `${text} đ`} />
+                            <Table.Column title="Tổng" width={70} render={(text, record) => `${record.price * record.quantity} đ`} />
                             <Table.Column title="Hành động" render={(text, record) => (
                                 <Button icon={<DeleteOutlined />} onClick={() => removeItem(record.key)} danger />
                             )} />

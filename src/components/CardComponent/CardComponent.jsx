@@ -9,7 +9,7 @@ const CardComponent = ({ product }) => {
 
     // Function to navigate to the product detail page
     const handleCardDetail = (id) => {
-        navigate(`/product/${id}`);
+        navigate(`/product/details/${id}`);
     };
 
     return (

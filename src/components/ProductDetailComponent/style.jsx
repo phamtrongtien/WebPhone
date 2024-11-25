@@ -67,4 +67,5 @@ export const WrapperProductDetail = styled(Row)`
   background: rgb(255, 255, 255, 0.54);
   padding: 16px;
   border-radius: 20px;
+  
 `;

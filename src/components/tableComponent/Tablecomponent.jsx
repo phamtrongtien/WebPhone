@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Input, Popconfirm } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';  // Import biểu tượng tìm kiếm
+import { SearchOutlined } from '@ant-design/icons';
+import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 import './style.css';
 
 const Tablecomponent = (props) => {
@@ -89,18 +90,29 @@ const Tablecomponent = (props) => {
 
     return (
         <div>
-            <div style={{ marginBottom: 20 }}>
-                <Input
+            <div style={{ marginBottom: 20, display: 'flex', flex: 'row' }}>
+                <div> <Input
                     placeholder="Tìm kiếm tên sản phẩm"
                     value={searchText}
                     onChange={handleSearchChange}
                     style={{ width: 300, marginRight: 10 }}
                     prefix={<SearchOutlined />} // Biểu tượng tìm kiếm trong ô input
                 />
-                <Button onClick={handleSearch} type="primary">
-                    Tìm kiếm
-                </Button>
+                    <Button onClick={handleSearch} type="primary">
+                        Tìm kiếm
+                    </Button></div>
+                <div style={{ width: 300, marginLeft: 20 }}>
+                    <ReactHTMLTableToExcel
+                        id="export-to-excel"
+                        className="ant-btn ant-btn-primary"
+                        table="product-table"
+                        filename="DanhSachSanPham"
+                        sheet="Sheet1"
+                        buttonText="Xuất Excel"
+                    />
+                </div>
             </div>
+
 
             <div style={{ width: "100%" }}>
                 <Table
@@ -112,13 +124,45 @@ const Tablecomponent = (props) => {
                         total: filteredProducts.length,
                         showTotal: (total) => `Tổng cộng ${total} sản phẩm`,
                     }}
-                    onChange={handleTableChange} // Thêm phương thức xử lý thay đổi bảng
+                    onChange={handleTableChange}
                     style={{ marginTop: 20, padding: 0 }}
                     rowClassName="large-table-row"
                     size="large"
                     bordered
                 />
             </div>
+
+            {/* Ẩn bảng chứa dữ liệu để xuất Excel */}
+            <table id="product-table" style={{ display: 'none' }}>
+                <thead>
+                    <tr>
+                        <th>Tên sản phẩm</th>
+                        <th>Hình ảnh</th>
+                        <th>Loại</th>
+                        <th>Giá</th>
+                        <th>Số lượng tồn</th>
+                        <th>Đánh giá</th>
+                        <th>Mô tả</th>
+                        <th>Giảm giá (%)</th>
+                        <th>Đã bán</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {filteredProducts.map((product, index) => (
+                        <tr key={index}>
+                            <td>{product.name}</td>
+                            <td>{product.image}</td> {/* Hiển thị URL thay vì thẻ <img> */}
+                            <td>{product.type}</td>
+                            <td>{product.price}</td>
+                            <td>{product.countInStock}</td>
+                            <td>{product.rating}</td>
+                            <td>{product.description}</td>
+                            <td>{product.discount}</td>
+                            <td>{product.selled}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 };

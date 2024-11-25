@@ -11,7 +11,10 @@ const ButtonInputsearch = (props) => {
                 size={size}
                 placeholder={placeholder}
                 variant="filled"
-                style={{ marginTop: '10px', backgroundColor: backgroundColorInput, borderTopRightRadius: '0px', borderBottomRightRadius: '0px', borderTopLeftRadius: '20px', borderBottomLeftRadius: '20px' }} />
+                {...props}
+                style={{ marginTop: '10px', backgroundColor: backgroundColorInput, borderTopRightRadius: '0px', borderBottomRightRadius: '0px', borderTopLeftRadius: '20px', borderBottomLeftRadius: '20px' }}>
+
+            </InputComponent>
             <ButtonComponent
                 size={size}
                 icon={<SearchOutlined />}

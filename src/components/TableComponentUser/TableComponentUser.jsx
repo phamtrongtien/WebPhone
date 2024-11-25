@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Input, Popconfirm } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';  // Import biểu tượng tìm kiếm
+import { SearchOutlined } from '@ant-design/icons'; // Import biểu tượng tìm kiếm
+import ReactHTMLTableToExcel from 'react-html-table-to-excel'; // Import ReactHTMLTableToExcel
 
 const Tablecomponent = (props) => {
     const { users = [], isLoadingUser = false, onEditUser, onDeleteUser } = props;
@@ -105,6 +106,18 @@ const Tablecomponent = (props) => {
                 </Button>
             </div>
 
+            <div style={{ marginBottom: 20 }}>
+                {/* Nút xuất Excel */}
+                <ReactHTMLTableToExcel
+                    id="export-to-excel"
+                    className="ant-btn ant-btn-primary"
+                    table="user-table"
+                    filename="DanhSachNguoiDung"
+                    sheet="Sheet1"
+                    buttonText="Xuất Excel"
+                />
+            </div>
+
             <div style={{ width: "100%" }}>
                 <Table
                     columns={columns}
@@ -122,6 +135,30 @@ const Tablecomponent = (props) => {
                     bordered
                 />
             </div>
+
+            {/* Ẩn bảng chứa dữ liệu để xuất Excel */}
+            <table id="user-table" style={{ display: 'none' }}>
+                <thead>
+                    <tr>
+                        <th>Tên người dùng</th>
+                        <th>Email</th>
+                        <th>Số điện thoại</th>
+                        <th>Địa chỉ</th>
+                        <th>Quyền quản trị</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {filteredUsers.map((user, index) => (
+                        <tr key={index}>
+                            <td>{user.name}</td>
+                            <td>{user.email}</td>
+                            <td>{user.phone}</td>
+                            <td>{user.address}</td>
+                            <td>{user.isAdmin ? 'Quản trị viên' : 'Người dùng'}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 };
