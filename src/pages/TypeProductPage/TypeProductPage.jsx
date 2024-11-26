@@ -1,36 +1,55 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import NavBarComponent from '../../components/NavBarComponent/NavBarComponent';
 import CardComponent from '../../components/CardComponent/CardComponent';
-import { WrapperRow, WrapperCol, WrapperProducts, WrapperPagination } from './style'; // Import styled components
+import { WrapperRow, WrapperCol, WrapperProducts, WrapperPagination } from './style';
 import FooterComponent from '../../components/FooterComponent/FooterComponent';
-import * as ProductService from '../../services/ProductService'; // Giả sử bạn có service để lấy sản phẩm theo loại
+import * as ProductService from '../../services/ProductService';
 
 const TypeProductPage = () => {
-    const { type } = useParams(); // Lấy loại sản phẩm từ URL
-    const [products, setProducts] = useState([]);
+    const { type } = useParams();
+    const { state } = useLocation();
+    const [products, setProducts] = useState([]); // Khởi tạo mặc định là mảng rỗng
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
+    const [totalProducts, setTotalProducts] = useState(0);
 
     useEffect(() => {
-        // Hàm lấy sản phẩm theo loại và trang
         const fetchProducts = async () => {
             setLoading(true);
             try {
-                const response = await ProductService.getProductAll(type, currentPage); // Gọi API lấy sản phẩm
-                setProducts(response.data); // Giả sử API trả về { data: [...] }
+                const response = await ProductService.getProductType(type || state);
+                if (response && response.status === 'OK') {
+                    setProducts(response.data || []);
+                    console.log(products)// Đảm bảo dữ liệu luôn là mảng
+                    setTotalProducts(response.data.total || 0);
+                } else {
+                    setProducts([]);
+                }
             } catch (error) {
                 console.error('Lỗi khi lấy sản phẩm:', error);
+                setProducts([]); // Đặt lại thành mảng rỗng nếu có lỗi
             } finally {
                 setLoading(false);
             }
         };
 
         fetchProducts();
-    }, [type, currentPage]);
+    }, [type, state]);
 
-    const onChangePage = (page) => {
-        setCurrentPage(page); // Cập nhật trang hiện tại
+    const onChangePage = async (page) => {
+        setCurrentPage(page);
+        setLoading(true);
+        try {
+            const response = await ProductService.getProductAll(type || state, page);
+            if (response && response.status === 'OK') {
+                setProducts(response.data.products || []);
+            }
+        } catch (error) {
+            console.error('Lỗi khi thay đổi trang:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -39,25 +58,31 @@ const TypeProductPage = () => {
                 <WrapperCol span={4}>
                     <NavBarComponent />
                 </WrapperCol>
-                <WrapperCol span={20} style={{ padding: '0 120px', marginTop: '10px', marginBottom: '10px', background: 'rgba(255, 255, 255, 0.54)' }}>
-                    {
-                        loading ? (
-                            <div>Loading...</div> // Hiển thị khi đang tải dữ liệu
-                        ) : (
-                            <WrapperProducts>
-                                {products.length > 0 ? (
-                                    products.map(product => (
-                                        <CardComponent key={product.id} product={product} />
-                                    ))
-                                ) : (
-                                    <div>Không có sản phẩm</div> // Thông báo nếu không có sản phẩm
-                                )}
-                            </WrapperProducts>
-                        )
-                    }
+                <WrapperCol
+                    span={20}
+                    style={{
+                        padding: '0 120px',
+                        marginTop: '10px',
+                        marginBottom: '10px',
+                        background: 'rgba(255, 255, 255, 0.54)',
+                    }}
+                >
+                    {loading ? (
+                        <div>Loading...</div>
+                    ) : (
+                        <WrapperProducts>
+                            {products && products.length > 0 ? ( // Kiểm tra products trước khi gọi .length
+                                products.map((product) => (
+                                    <CardComponent key={product.id} product={product} />
+                                ))
+                            ) : (
+                                <div>Không có sản phẩm</div>
+                            )}
+                        </WrapperProducts>
+                    )}
                     <WrapperPagination
                         current={currentPage}
-                        total={100} // Bạn có thể lấy tổng số sản phẩm từ API nếu có
+                        total={totalProducts}
                         onChange={onChangePage}
                         style={{ textAlign: 'center', marginTop: '20px' }}
                     />

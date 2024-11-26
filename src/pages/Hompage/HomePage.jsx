@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import SliderComponent from '../../components/SliderComponent/SliderComponent';
 import TypeProduct from '../../components/TypeProduct/TypeProduct';
 import { WrapperButtonMore, WrapperTypeProduct, HomePageContainer, CardsContainer, SectionTitle, PromoBanner, NeedSection } from './style';
@@ -16,12 +16,14 @@ import * as ProductService from '../../services/ProductService';
 import { useSelector } from 'react-redux';
 
 const HomePage = () => {
-    const searchProduct = useSelector((state) => state.product.search); // Truy xuất từ Redux state
+    const searchProduct = useSelector((state) => state.product.search); // Lấy từ Redux state
     const navigate = useNavigate();
     const [showAd, setShowAd] = useState(true);
     const [stateProduct, setStateProduct] = useState([]);
-    const refSearch = useRef(false); // Dùng để kiểm soát lần render đầu tiên
     const [typeProduct, setTypeProduct] = useState([]);
+    const [isExpanded, setIsExpanded] = useState(false); // Trạng thái mở rộng danh sách
+    const refSearch = useRef(false); // Dùng để kiểm soát lần render đầu tiên
+    const refWrapper = useRef(null); // Tham chiếu vùng danh sách loại sản phẩm
 
     // Fetch toàn bộ sản phẩm hoặc theo từ khóa tìm kiếm
     const fetchAllProduct = async (search = '') => {
@@ -32,31 +34,34 @@ const HomePage = () => {
     // Fetch sản phẩm mới (8 sản phẩm mới nhất)
     const fetchNewProducts = async () => {
         const response = await ProductService.getProductAll();
-        return response.data.sort((a, b) => b.id - a.id).slice(0, 8); // Sắp xếp theo id giảm dần
+        return response.data.sort((a, b) => b.id - a.id).slice(0, 8);
     };
 
     // Fetch sản phẩm bán chạy (8 sản phẩm bán chạy nhất)
     const fetchBestSellingProducts = async () => {
         const response = await ProductService.getProductAll();
-        return response.data.sort((a, b) => b.sales - a.sales).slice(0, 8); // Sắp xếp theo sales giảm dần
+        return response.data.sort((a, b) => b.sales - a.sales).slice(0, 8);
     };
 
     // Fetch sản phẩm đánh giá cao (4 sản phẩm có rating cao nhất)
     const fetchTopRatedProducts = async () => {
         const response = await ProductService.getProductAll();
-        return response.data.sort((a, b) => b.rating - a.rating).slice(0, 4); // Sắp xếp theo rating giảm dần
+        return response.data.sort((a, b) => b.rating - a.rating).slice(0, 4);
     };
+
+    // Fetch toàn bộ loại sản phẩm
     const fetchAllTypeProduct = async () => {
         const response = await ProductService.getAllType();
         if (response.status === 'OK') {
-            setTypeProduct(response.data)
-
+            setTypeProduct(response.data);
         }
-    }
+    };
+
     useEffect(() => {
         fetchAllTypeProduct();
-    }, [])
-    // useEffect để theo dõi thay đổi từ Redux state searchProduct
+    }, []);
+
+    // Xử lý theo dõi thay đổi từ Redux state searchProduct
     useEffect(() => {
         if (refSearch.current) {
             const fetchData = async () => {
@@ -68,6 +73,19 @@ const HomePage = () => {
             refSearch.current = true;
         }
     }, [searchProduct]);
+
+    // Lắng nghe sự kiện click bên ngoài danh sách loại sản phẩm
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (refWrapper.current && !refWrapper.current.contains(event.target)) {
+                setIsExpanded(false); // Thu gọn danh sách
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     // Fetch dữ liệu với React Query
     const { data: newProducts, isLoading: isLoadingNew, error: errorNew } = useQuery({
@@ -87,10 +105,18 @@ const HomePage = () => {
     const handleCloseAd = () => setShowAd(false);
 
     // Xử lý điều hướng đến trang danh mục
-    const handleCategory = () => navigate('/type');
+    const handleCategory = () => {
+
+    };
 
     // Xử lý điều hướng đến chi tiết sản phẩm
     const handleProductDetail = (id) => navigate(`/product/details/${id}`);
+
+    // Xử lý nhấn "Xem thêm"
+    const handleToggleExpand = () => setIsExpanded(true);
+
+    // Lấy danh sách loại sản phẩm cần hiển thị
+    const displayedTypes = isExpanded ? typeProduct : typeProduct.slice(0, 6);
 
     if (isLoadingNew || isLoadingBestSelling || isLoadingTopRated) return <div>Đang tải...</div>;
     if (errorNew || errorBestSelling || errorTopRated) return <div>Lỗi: {errorNew?.message || errorBestSelling?.message || errorTopRated?.message}</div>;
@@ -103,10 +129,23 @@ const HomePage = () => {
                 <PromoBanner>🔥 Giảm giá lên đến 50% cho sản phẩm điện tử!</PromoBanner>
 
                 {/* Loại sản phẩm */}
-                <WrapperTypeProduct>
-                    {typeProduct.map((item) => (
-                        <TypeProduct name={item} key={item} />
+                <WrapperTypeProduct ref={refWrapper}>
+                    {displayedTypes.map((item, index) => (
+                        <TypeProduct name={item} key={index} />
                     ))}
+                    {typeProduct.length > 6 && !isExpanded && (
+                        <span
+                            onClick={handleToggleExpand}
+                            style={{
+                                cursor: 'pointer',
+                                color: '#007bff',
+                                fontWeight: 'bold',
+                                marginLeft: '10px',
+                            }}
+                        >
+                            Xem thêm
+                        </span>
+                    )}
                 </WrapperTypeProduct>
 
                 {searchProduct ? (
@@ -175,9 +214,9 @@ const HomePage = () => {
                     </div>
                 )}
 
-                <div className="see-more">
+                {/* <div className="see-more">
                     <WrapperButtonMore onClick={handleCategory} textButton="Xem thêm" type="outline" styleTextButton={{ fontWeight: '500' }} />
-                </div>
+                </div> */}
             </HomePageContainer>
             <Chatbot />
             <FooterComponent />
