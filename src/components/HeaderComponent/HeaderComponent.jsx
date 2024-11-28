@@ -20,6 +20,8 @@ const HeaderComponent = ({ isHidenCart = false, isAdminPage = false, isName = fa
     const [userName, setUserName] = useState();
     const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(false);
+    const order = useSelector((state) => state.order);
+
     // Rename function to something appropriate like logoutUser
     const handleLogout = async () => {
         // Call a logout service to clear user data
@@ -116,7 +118,7 @@ const HeaderComponent = ({ isHidenCart = false, isAdminPage = false, isName = fa
                 </LoadingComponent>
                 {!isHidenCart && (
                     <div onClick={handleUserCard} style={{ cursor: 'pointer' }}>
-                        <Badge count={4} size='small'>
+                        <Badge count={order?.orderItems?.length} size='small'>
                             <ShoppingCartOutlined style={{ fontSize: '30px', color: "black" }} />
                         </Badge>
                         <WrapperTextHeaderSmall>Giỏ hàng</WrapperTextHeaderSmall>

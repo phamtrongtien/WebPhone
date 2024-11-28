@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { WrapperContainerLeft, WrapperContainerRight, WrapperTextLight, WrapperLoginButton, WrapperOuterContainer, WrapperInnerContainer, WrapperImageContainer, WrapperHeader, WrapperCard } from './style';
 import InputFormComponent from '../../components/InputFormComponent/InputFormComponent';
 import ButtonComponent from '../../components/ButtonComponent/ButtonComponent';
@@ -18,7 +18,7 @@ import { updateUser } from '../../redux/slices/userSlide';
 const SiginPage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
+    const location = useLocation();
     const mutation = useMutationHooks(
         data => UserService.loginUser(data)
     );
@@ -27,15 +27,25 @@ const SiginPage = () => {
 
     useEffect(() => {
         if (isSuccess) {
-            message.success();
+
+            if (location?.state) {
+                navigate(location.state);
+            } else {
+                navigate('/');
+            }
+
+            message.success('Login successful!');  // Added message content
+
             localStorage.setItem('access_token', JSON.stringify(data?.access_token));
+
             if (data?.access_token) {
                 const decode = jwtDecode(data?.access_token);
+
                 if (decode?.id) {
                     handLeGetDetailsUser(decode?.id, data?.access_token);
-                    navigate('/');
-                    // // Kiểm tra quyền admin và điều hướng đến trang tương ứng
-                    // if (decode?.isAdmin === true) {
+
+                    // Consider checking if you need to navigate somewhere else based on user role
+                    // if (decode?.isAdmin) {
                     //     navigate('/admin');
                     // } else {
                     //     navigate('/');
@@ -43,9 +53,10 @@ const SiginPage = () => {
                 }
             }
         } else if (isError) {
-            message.error();
+            message.error('An error occurred during login.');  // Added message content
         }
     }, [isSuccess, isError, data, navigate]);
+
 
     const handLeGetDetailsUser = async (id, token) => {
         const res = await UserService.getDetailsUser(id, token);

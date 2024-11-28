@@ -19,15 +19,18 @@ import { MinusOutlined, PlusOutlined, StarFilled } from "@ant-design/icons";
 import ButtonComponent from "../ButtonComponent/ButtonComponent";
 import * as ProductService from "../../services/ProductService";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import { addOrderProduct } from "../../redux/slices/orderSlice";
 
 const ProductDetailComponent = ({ productId }) => {
   const user = useSelector((state) => state.user);
   const [quantity, setQuantity] = useState(1); // Số lượng mặc định là 3
   const [selectedColor, setSelectedColor] = useState("Red"); // Màu mặc định
   const [userRating, setUserRating] = useState(null); // Rating given by the user
-
-
+  const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useDispatch()
   // Hàm lấy chi tiết sản phẩm
   const fetchGetDetailsProduct = async ({ queryKey }) => {
     const id = queryKey[1]; // Lấy productId từ queryKey
@@ -60,7 +63,22 @@ const ProductDetailComponent = ({ productId }) => {
       setQuantity(quantity + 1); // Increase quantity if it doesn't exceed stock
     }
   };
+  const handleAddOrder = () => {
+    if (!user.id) {
+      navigate('/sig-in', { state: location.pathname });
+    } else {
+      dispatch(addOrderProduct({
+        orderItem: {
+          name: products.name,
+          amount: quantity,
+          image: products.image,
+          price: products.price,
+          product: products?._id
+        }
+      }));
 
+    }
+  }
   const decreaseQuantity = () => {
     if (quantity > 1) setQuantity(quantity - 1); // Decrease quantity if it's greater than 1
   };
@@ -80,7 +98,7 @@ const ProductDetailComponent = ({ productId }) => {
     <WrapperProductDetail>
       <Col span={10}>
         <Image src={products.image} alt="conan" style={{ width: '500px' }} />
-        <Row style={{ flexWrap: "nowrap", paddingTop: "10px", justifyContent: "space-between" }}>
+        {/* <Row style={{ flexWrap: "nowrap", paddingTop: "10px", justifyContent: "space-between" }}>
           <WrapperColImage span={4}>
             <WrapperImageSmall src={conanDetail1} alt="dt1" />
           </WrapperColImage>
@@ -96,7 +114,7 @@ const ProductDetailComponent = ({ productId }) => {
           <WrapperColImage span={4}>
             <WrapperImageSmall src={conanDetail1} alt="dt1" />
           </WrapperColImage>
-        </Row>
+        </Row> */}
       </Col>
       <Col span={14} style={{ paddingLeft: "10px" }}>
         <WrapperStyleNameProduct>
@@ -135,7 +153,7 @@ const ProductDetailComponent = ({ productId }) => {
         {/* Thêm lựa chọn màu sắc */}
         <div style={{ marginBottom: "10px" }}>
           <span style={{ fontSize: "16px", fontWeight: "500" }}>Chọn Màu: </span>
-          <Select
+          {/* <Select
             defaultValue={selectedColor}
             style={{ width: 120 }}
             onChange={handleColorChange}
@@ -144,7 +162,7 @@ const ProductDetailComponent = ({ productId }) => {
             <Select.Option value="Blue">Xanh Dương</Select.Option>
             <Select.Option value="Black">Đen</Select.Option>
             <Select.Option value="White">Trắng</Select.Option>
-          </Select>
+          </Select> */}
         </div>
 
         {/* Chỉnh sửa số lượng */}
@@ -181,6 +199,7 @@ const ProductDetailComponent = ({ productId }) => {
               height: "48px",
               width: "200px",
             }}
+            onClick={handleAddOrder}
             textButton="Chọn Mua"
             styleTextButton={{ color: "white" }}
           />
