@@ -27,6 +27,10 @@ const SiginPage = () => {
 
     useEffect(() => {
         if (isSuccess) {
+            if (data?.status === "ERR") {
+                message.error('Tài khoản hoặc mật khẩu không đúng');  // Thông báo lỗi
+                return;  // Không thực hiện điều hướng khi có lỗi
+            }
 
             if (location?.state) {
                 navigate(location.state);

@@ -18,7 +18,9 @@ const ProfileUserPage = () => {
     const [email, setEmail] = useState(user?.email);
     const [phone, setPhone] = useState(user?.phone);
     const [address, setAddress] = useState(user?.address);
+    const [city, setCity] = useState(user?.city);  // Thêm state cho city
     const [avatar, setAvatar] = useState(user?.avatar);
+
     const mutation = useMutationHooks(
         (data) => {
             const { id, access_token, ...rests } = data;
@@ -46,6 +48,7 @@ const ProfileUserPage = () => {
         setEmail(user?.email);
         setPhone(user?.phone);
         setAddress(user?.address);
+        setCity(user?.city);  // Cập nhật city khi user thay đổi
         setAvatar(user?.avatar);
     }, [user]);
 
@@ -67,6 +70,7 @@ const ProfileUserPage = () => {
     const handleOnchangeEmail = (value) => setEmail(value);
     const handleOnchangePhone = (value) => setPhone(value);
     const handleOnchangeAddress = (value) => setAddress(value);
+    const handleOnchangeCity = (value) => setCity(value);  // Thêm hàm thay đổi city
 
     const handleOnChangeAvatar = async ({ fileList }) => {
         const file = fileList[0];
@@ -83,7 +87,6 @@ const ProfileUserPage = () => {
         }
     };
 
-    // Cập nhật tất cả thông tin người dùng
     const handleUpdate = () => {
         mutation.mutate({
             id: user?.id,
@@ -91,6 +94,7 @@ const ProfileUserPage = () => {
             name,
             phone,
             address,
+            city,  // Gửi city lên server
             avatar,
             access_token: user.access_token
         });
@@ -105,7 +109,6 @@ const ProfileUserPage = () => {
 
     return (
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-
             <WrapperContentProfile>
                 <WrapperHeaderF>Thông tin người dùng</WrapperHeaderF>
 
@@ -146,6 +149,15 @@ const ProfileUserPage = () => {
                 </WrapperInput>
 
                 <WrapperInput>
+                    <WrapperLable>Thành phố</WrapperLable>
+                    <InputFormComponent
+                        value={city}
+                        onChange={handleOnchangeCity}  // Cập nhật city
+                        placeholder="Nhập thành phố của bạn"
+                    />
+                </WrapperInput>
+
+                <WrapperInput>
                     <WrapperLable>Avatar</WrapperLable>
                     <Upload
                         maxCount={1}
@@ -167,7 +179,6 @@ const ProfileUserPage = () => {
                     )}
                 </WrapperInput>
 
-                {/* Một nút duy nhất để cập nhật tất cả */}
                 <WrapperButton>
                     <ButtonUpdate onClick={handleUpdate}>Cập nhật thông tin</ButtonUpdate>
                 </WrapperButton>

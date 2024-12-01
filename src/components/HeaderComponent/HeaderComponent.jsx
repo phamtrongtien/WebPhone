@@ -1,44 +1,49 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { Badge, Col, Popover } from 'antd';
 import { WrapperAccout, Wrapperheader, WrapperTextHeader, WrapperTextHeaderSmall } from './style';
 import { UserOutlined, CaretDownOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import ButtonInputsearch from '../ButtonInputSearch/ButtonInputsearch';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import * as UserService from '../../services/UserService';
-import { resetUser, updateUser } from '../../redux/slices/userSlide'
+import { resetUser } from '../../redux/slices/userSlide';
 import LoadingComponent from '../LoadingComponent/LoadingComponent';
 import { searchProduct } from '../../redux/slices/productSlice';
+
 const HeaderComponent = ({ isHidenCart = false, isAdminPage = false, isName = false }) => {
     const navigate = useNavigate();
     const user = useSelector((state) => state.user);
     const dispatch = useDispatch();
-    const handleNavigateLogin = () => navigate("/sig-in");
-    const handleBackHome = () => navigate('/');
-    const handleUserCard = () => navigate('/order');
     const [userName, setUserName] = useState();
     const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(false);
     const order = useSelector((state) => state.order);
 
-    // Rename function to something appropriate like logoutUser
+    // Hàm đăng xuất
     const handleLogout = async () => {
-        // Call a logout service to clear user data
-        setLoading(true)
-        await UserService.logoutUser(); // Make sure you have a logout function in your service
-        dispatch(resetUser())
-        setLoading(false)
+        setLoading(true);
+        try {
+            await UserService.logoutUser(); // Gọi API đăng xuất (nếu có)
+            localStorage.removeItem('access_token'); // Xóa token khỏi localStorage
+            localStorage.removeItem('user_info');    // Xóa thông tin người dùng (nếu có)
+            dispatch(resetUser()); // Đặt lại trạng thái người dùng trong Redux
+        } catch (error) {
+            console.error("Logout failed:", error);
+        } finally {
+            setLoading(false);
+        }
     };
-    const handleProfile = () => {
-        navigate('/profile-user');
-    }
-    const handleAdminPage = () => {
-        navigate('/admin')
-    }
+
+    const handleNavigateLogin = () => navigate("/sig-in");
+    const handleBackHome = () => navigate('/');
+    const handleUserCard = () => navigate('/order');
+    const handleProfile = () => navigate('/profile-user');
+    const handleAdminPage = () => navigate('/admin');
+
     useEffect(() => {
-        setUserName(user?.name)
-    }, [user?.name])
+        setUserName(user?.name);
+    }, [user?.name]);
+
     const content = (
         <div style={{ cursor: 'pointer' }}>
             {!isAdminPage ? (
@@ -47,7 +52,6 @@ const HeaderComponent = ({ isHidenCart = false, isAdminPage = false, isName = fa
                     <p onClick={handleProfile}>Thông tin người dùng</p>
                     {user.isAdmin && (
                         <p onClick={handleAdminPage}>Quản lý hệ thống</p>
-
                     )}
                 </>
             ) : (
@@ -57,19 +61,18 @@ const HeaderComponent = ({ isHidenCart = false, isAdminPage = false, isName = fa
             )}
         </div>
     );
-    const onSearch = (e) => {
-        setSearch(e.target.value)
-        dispatch(searchProduct(e.target.value))
 
-    }
+    const onSearch = (e) => {
+        setSearch(e.target.value);
+        dispatch(searchProduct(e.target.value));
+    };
+
     return (
         <Wrapperheader>
             <Col span={6}>
                 {!isName ? (
-                    <WrapperTextHeader onClick={handleBackHome}>BEEBEE
-                    </WrapperTextHeader>
-                ) : (<WrapperTextHeader >Dashboard
-                </WrapperTextHeader>)}
+                    <WrapperTextHeader onClick={handleBackHome}>BEEBEE</WrapperTextHeader>
+                ) : (<WrapperTextHeader>Dashboard</WrapperTextHeader>)}
             </Col>
             <Col span={11}>
                 <ButtonInputsearch
@@ -83,27 +86,22 @@ const HeaderComponent = ({ isHidenCart = false, isAdminPage = false, isName = fa
 
             <Col span={6} style={{ display: "flex", gap: "20px", alignItems: 'center' }}>
                 <LoadingComponent isLoading={loading}>
-
                     <WrapperAccout>
                         {!isAdminPage && (<UserOutlined style={{ fontSize: '30px' }} />)}
                         {user?.access_token ? (
                             <Popover content={content} trigger="click">
-                                <div style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                }}>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <span>{user.name || user.email}</span>
                                     <img src={user.avatar}
                                         style={{
                                             margin: '5px',
-                                            borderRadius: '50%',  // Làm cho ảnh có hình tròn
-                                            width: '30px',       // Chiều rộng ảnh
-                                            height: '30px',      // Chiều cao ảnh
-                                            objectFit: 'cover',   // Đảm bảo ảnh không bị biến dạng
+                                            borderRadius: '50%',
+                                            width: '30px',
+                                            height: '30px',
+                                            objectFit: 'cover',
                                         }}
                                     />
                                 </div>
-
                             </Popover>
                         ) : (
                             <div onClick={handleNavigateLogin} style={{ cursor: 'pointer' }}>

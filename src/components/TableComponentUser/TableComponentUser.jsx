@@ -71,9 +71,9 @@ const Tablecomponent = (props) => {
             key: 'action',
             render: (_, record) => (
                 <div style={{ display: 'flex', gap: '8px' }}>
-                    <Button type="primary" onClick={() => onEditUser(record)}>
+                    {/* <Button type="primary" onClick={() => onEditUser(record)}>
                         Chỉnh sửa
-                    </Button>
+                    </Button> */}
                     {!record.isAdmin && (
                         <Popconfirm
                             title="Bạn có chắc chắn muốn xóa người dùng này không?"

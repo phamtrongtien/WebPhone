@@ -16,3 +16,12 @@ export const getBase64 = (file) => {
         reader.onerror = (error) => reject(error);
     });
 };
+
+export const converPrice = (product) => {
+    try {
+        const result = product.price
+        return result
+    } catch (error) {
+        return null
+    }
+}

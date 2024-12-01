@@ -22,6 +22,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { addOrderProduct } from "../../redux/slices/orderSlice";
+import { converPrice } from "../../utils";
 
 const ProductDetailComponent = ({ productId }) => {
   const user = useSelector((state) => state.user);
@@ -139,7 +140,7 @@ const ProductDetailComponent = ({ productId }) => {
         </WrapperReportText>
         <WrapperPriceProduct>
           <WrapperPriceTextProduct>
-            {products.price}đ
+            {converPrice(products)}VNĐ
             <WrapperDiscountText> -{products.discount} %</WrapperDiscountText>
           </WrapperPriceTextProduct>
         </WrapperPriceProduct>

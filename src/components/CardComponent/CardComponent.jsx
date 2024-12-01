@@ -3,6 +3,7 @@ import { StyleNameProduct, WrapperCardStyle, WrapperDiscountText, WrapperPriceTe
 import { StarFilled } from '@ant-design/icons';
 import like from '../../assets/img/like.png';
 import { useNavigate } from 'react-router-dom';
+import { converPrice } from '../../utils';
 
 const CardComponent = ({ product }) => {
     const navigate = useNavigate();
@@ -39,7 +40,7 @@ const CardComponent = ({ product }) => {
                 <span>| Đã bán {product.selled}+</span>
             </WrapperReportText>
             <WrapperPriceText>
-                {product.price}đ
+                {converPrice(product)}VNĐ
                 <WrapperDiscountText> -{product.discount}%</WrapperDiscountText>
             </WrapperPriceText>
         </WrapperCardStyle>

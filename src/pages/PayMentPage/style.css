@@ -1,0 +1,186 @@
+.payment-page {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #f7f7f7;
+  min-height: 100vh;
+}
+
+.page-title {
+  color: #4a90e2;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.payment-details-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+/* 
+.payment-method-select,
+.shipping-method-select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+  margin-bottom: 16px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.payment-method-select:focus,
+.shipping-method-select:focus {
+  border-color: #4a90e2;
+} */
+
+.left {
+  float: left;
+  width: 50%;
+}
+
+.right {
+  margin-right: 10px;
+  float: right;
+  width: 40%;
+}
+
+.address-input {
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: #f1f1f1;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.address-input p {
+  margin: 5px 0;
+  color: #555;
+}
+
+span {
+  color: #4a90e2;
+  cursor: pointer;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+span:hover {
+  color: #007aff;
+}
+
+.payment-summary {
+  margin-top: 20px;
+  font-size: 16px;
+  color: #333;
+}
+
+.payment-summary div {
+  margin-bottom: 10px;
+}
+
+.total-price {
+  font-size: 18px;
+  font-weight: bold;
+  color: #4a90e2;
+}
+
+.confirm-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #4a90e2;
+  border: none;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.confirm-button:hover {
+  background-color: #007aff;
+}
+
+.update-info {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.update-info .ant-form-item {
+  margin-bottom: 16px;
+}
+
+.update-info .ant-input {
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+}
+
+.update-info .ant-input:focus {
+  border-color: #4a90e2;
+}
+
+.update-info button {
+  margin-top: 10px;
+  width: 100%;
+  background-color: #4a90e2;
+  color: white;
+  font-weight: bold;
+  padding: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.update-info button:hover {
+  background-color: #007aff;
+}
+
+/* Footer Styling */
+footer {
+  margin-top: 30px;
+  text-align: center;
+  color: #888;
+  font-size: 14px;
+}
+
+footer a {
+  color: #4a90e2;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  .payment-details-card {
+    padding: 16px;
+  }
+
+  .left,
+  .right {
+    width: 100%;
+    float: none;
+  }
+
+  .payment-summary {
+    font-size: 14px;
+  }
+
+  .total-price {
+    font-size: 16px;
+  }
+}
