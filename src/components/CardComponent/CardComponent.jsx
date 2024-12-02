@@ -15,10 +15,11 @@ const CardComponent = ({ product }) => {
 
     return (
         <WrapperCardStyle
-            onClick={() => handleCardDetail(product._id)}  // Call the function on click
+            onClick={() => product.countInStock !== 0 && handleCardDetail(product._id)}  // Call the function on click
             hoverable
             style={{ width: '180px', position: 'relative' }}
             cover={<img alt={product.name} src={product.image} />}
+            disabled={product.countInStock === 0}
         >
             <img
                 src={like}

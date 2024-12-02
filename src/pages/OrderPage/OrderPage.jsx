@@ -9,6 +9,8 @@ import { converPrice } from '../../utils';
 import { useMutationHooks } from '../../hook/useMutationHook';
 import * as UserService from '../../services/UserService';
 import { useNavigate } from 'react-router-dom';
+import Step from '../../components/StepComponent/Stepcomponent';
+import StepComponent from '../../components/StepComponent/Stepcomponent';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -100,7 +102,7 @@ const OrderPage = () => {
                     ? total + item.price * item.amount
                     : total,
             0
-        ) + shippingFee
+        )
         : 0;
 
     const handleConfirmOrder = () => {
@@ -158,10 +160,27 @@ const OrderPage = () => {
     const handleAddress = () => {
         setInOpenModelUpdateInfo(true)
     };
-
+    const items =
+        [
+            {
+                title: 'Đặt hàng',
+                description: '',
+            },
+            {
+                title: 'chọn phương thức thanh toán',
+                description: '',
+            },
+            {
+                title: 'Thanh toán thành công',
+                description: '',
+            },
+        ];
     return (
         <div className="order-page">
             <Title level={2} className="page-title">Thông tin đặt hàng 🛒</Title>
+            <div>
+                <StepComponent items={items} />
+            </div>
             <h1>Tổng đặt hàng: {order.orderItems.length}</h1>
             <Row gutter={[16, 16]}>
                 <Col xs={24} lg={16}>
@@ -262,7 +281,7 @@ const OrderPage = () => {
                             onClick={handleAddress}
 
                         >Thay đổi địa chỉ</span>
-                        <Title level={4}>Phương thức thanh toán 💳</Title>
+                        {/* <Title level={4}>Phương thức thanh toán 💳</Title>
                         <Select
                             value={paymentMethod}
                             onChange={setPaymentMethod}
@@ -271,14 +290,14 @@ const OrderPage = () => {
                             <Option value="creditCard">Thẻ tín dụng 💳</Option>
                             <Option value="paypal">PayPal 💰</Option>
                             <Option value="cashOnDelivery">Thanh toán khi nhận hàng 💵</Option>
-                        </Select>
+                        </Select> */}
                         <div className="order-summary">
-                            <div>
+                            {/* <div>
                                 <strong>Tiền hàng:</strong> {totalPrice - shippingFee} đ 💵
                             </div>
                             <div>
                                 <strong>Phí giao hàng:</strong> {shippingFee} đ 🚚
-                            </div>
+                            </div> */}
                             <div className="total-price">
                                 <strong>Tổng tiền:</strong> {totalPrice} đ 💸
                             </div>

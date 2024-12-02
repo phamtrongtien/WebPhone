@@ -9,6 +9,8 @@ import ProductDetailPage from "../pages/ProductDetailPage/ProductDetailPage"
 import AdminPage from "../pages/AdminPage/AdminPage"
 import ProfileUserPage from "../pages/ProfileUserPage/ProfileUserPage"
 import PayMentPage from "../pages/PayMentPage/PayMentPage"
+import PaySuccessPage from "../pages/PaySuccessPage/PaySuccessPage"
+import OrderInfoPage from '../pages/OrderInfoPage/OrderInfoPage'
 
 
 export const routes = [
@@ -56,6 +58,16 @@ export const routes = [
     {
         path: '/payment',
         page: PayMentPage,
+        isShowHeader: true
+    },
+    {
+        path: '/pay-success',
+        page: PaySuccessPage,
+        isShowHeader: true
+    },
+    {
+        path: '/my-order',
+        page: OrderInfoPage,
         isShowHeader: true
     },
     {

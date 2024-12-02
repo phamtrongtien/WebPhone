@@ -51,11 +51,14 @@ export const orderSlice = createSlice({
         removeOrderProduct: (state, action) => {
             const { idProduct } = action.payload;
             state.orderItems = state.orderItems.filter((item) => item.product !== idProduct);
+        },
+        resetOrder: (state) => {
+            Object.assign(state, initialState); // Đặt lại toàn bộ state về trạng thái ban đầu
         }
     },
 })
 
 // Action creators are generated for each case reducer function
-export const { addOrderProduct, increaseAmount, decreaseAmount, removeOrderProduct } = orderSlice.actions
+export const { resetOrder, addOrderProduct, increaseAmount, decreaseAmount, removeOrderProduct } = orderSlice.actions
 
 export default orderSlice.reducer

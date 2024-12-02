@@ -6,6 +6,8 @@ import * as UserService from '../../services/UserService';
 import FooterComponent from '../../components/FooterComponent/FooterComponent';
 import * as OrderService from '../../services/OrderService';
 import './style.css'
+import { useNavigate } from 'react-router-dom';
+import StepComponent from '../../components/StepComponent/Stepcomponent';
 const { Title } = Typography;
 const { Option } = Select;
 
@@ -16,6 +18,7 @@ const PayMentPage = () => {
     // const [address, setAddress] = useState('Mộ Lao, Hà Đông, Hà Nội');
     const [paymentMethod, setPaymentMethod] = useState('creditCard');
     const [shippingMethod, setShippingMethod] = useState('standard'); // New state for shipping method
+    const navigate = useNavigate();
     const [stateUser, setStateUser] = useState({
         name: '',
         phone: null,
@@ -128,10 +131,39 @@ const PayMentPage = () => {
             [name]: value,
         });
     };
+    const handleSuccess = () => {
+        navigate('/pay-success', {
+            state: {
+                paymentMethod: paymentMethod,
+                order: order.orderItems,
+                shippingPrice: shippingFees[shippingMethod],
+                shippingMethod: shippingMethod,
 
+
+            }
+        })
+    }
+    const items =
+        [
+            {
+                title: 'Đặt hàng',
+                description: '',
+            },
+            {
+                title: 'chọn phương thức thanh toán',
+                description: '',
+            },
+            {
+                title: 'Thanh toán thành công',
+                description: '',
+            },
+        ];
     return (
         <div className="payment-page">
             <Title level={2} className="page-title">Thông tin thanh toán 💳</Title>
+            <div>
+                <StepComponent current={1} items={items} />
+            </div>
             <h1>Tổng đặt hàng: {order.orderItems.length}</h1>
             <Row gutter={[16, 16]} justify="center" align="middle">
                 <Col xs={24} lg={12}>
@@ -177,7 +209,7 @@ const PayMentPage = () => {
                                 className="confirm-button"
                                 onClick={handleAddOrder}
                             >
-                                <span style={{ color: 'white' }}>Xác nhận thanh toán ✅</span>
+                                <span style={{ color: 'white' }} onClick={handleSuccess}>Xác nhận thanh toán ✅</span>
                             </Button></div>
                     </Card>
                 </Col>

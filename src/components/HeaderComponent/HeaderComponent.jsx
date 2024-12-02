@@ -9,15 +9,18 @@ import * as UserService from '../../services/UserService';
 import { resetUser } from '../../redux/slices/userSlide';
 import LoadingComponent from '../LoadingComponent/LoadingComponent';
 import { searchProduct } from '../../redux/slices/productSlice';
+import { resetOrder } from '../../redux/slices/orderSlice';
 
-const HeaderComponent = ({ isHidenCart = false, isAdminPage = false, isName = false }) => {
+const HeaderComponent = ({ isHiddenCart = false, isAdminPage = false, isName = false }) => {
     const navigate = useNavigate();
-    const user = useSelector((state) => state.user);
     const dispatch = useDispatch();
-    const [userName, setUserName] = useState();
+    const user = useSelector((state) => state.user);
+    const order = useSelector((state) => state.order);
+
+    const [userName, setUserName] = useState('');
     const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(false);
-    const order = useSelector((state) => state.order);
+    const [errorMessage, setErrorMessage] = useState(null);
 
     // Hàm đăng xuất
     const handleLogout = async () => {
@@ -26,73 +29,81 @@ const HeaderComponent = ({ isHidenCart = false, isAdminPage = false, isName = fa
             await UserService.logoutUser(); // Gọi API đăng xuất (nếu có)
             localStorage.removeItem('access_token'); // Xóa token khỏi localStorage
             localStorage.removeItem('user_info');    // Xóa thông tin người dùng (nếu có)
-            dispatch(resetUser()); // Đặt lại trạng thái người dùng trong Redux
+            dispatch(resetUser());
+            dispatch(resetOrder());// Đặt lại trạng thái người dùng trong Redux
         } catch (error) {
-            console.error("Logout failed:", error);
+            setErrorMessage('Logout failed. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleNavigateLogin = () => navigate("/sig-in");
+    // Xử lý điều hướng
     const handleBackHome = () => navigate('/');
     const handleUserCard = () => navigate('/order');
     const handleProfile = () => navigate('/profile-user');
     const handleAdminPage = () => navigate('/admin');
-
+    const handleNavigateLogin = () => navigate('/sig-in');
+    const handleInfoOrder = () => {
+        navigate('/my-order')
+    }
+    // Theo dõi thay đổi của user
     useEffect(() => {
-        setUserName(user?.name);
+        setUserName(user?.name || 'Guest');
     }, [user?.name]);
 
+
+    // Xử lý tìm kiếm
+    const onSearch = (e) => {
+        setSearch(e.target.value);
+        dispatch(searchProduct(e.target.value));
+    };
+
+    // Nội dung của Popover
     const content = (
         <div style={{ cursor: 'pointer' }}>
             {!isAdminPage ? (
                 <>
                     <p onClick={handleLogout}>Đăng xuất</p>
                     <p onClick={handleProfile}>Thông tin người dùng</p>
-                    {user.isAdmin && (
-                        <p onClick={handleAdminPage}>Quản lý hệ thống</p>
-                    )}
+                    <p onClick={handleInfoOrder}>Đơn hàng của tôi</p>
+                    {user?.isAdmin && <p onClick={handleAdminPage}>Quản lý hệ thống</p>}
                 </>
             ) : (
-                <>
-                    <p onClick={handleBackHome}>Đăng xuất</p>
-                </>
+                <p onClick={handleBackHome}>Đăng xuất</p>
             )}
         </div>
     );
-
-    const onSearch = (e) => {
-        setSearch(e.target.value);
-        dispatch(searchProduct(e.target.value));
-    };
 
     return (
         <Wrapperheader>
             <Col span={6}>
                 {!isName ? (
                     <WrapperTextHeader onClick={handleBackHome}>BEEBEE</WrapperTextHeader>
-                ) : (<WrapperTextHeader>Dashboard</WrapperTextHeader>)}
+                ) : (
+                    <WrapperTextHeader>Dashboard</WrapperTextHeader>
+                )}
             </Col>
             <Col span={11}>
                 <ButtonInputsearch
-                    placeholder='Tìm kiếm sản phẩm'
-                    textButton='Search'
-                    size='large'
+                    placeholder="Tìm kiếm sản phẩm"
+                    textButton="Search"
+                    size="large"
                     style={{ width: 100 }}
                     onChange={onSearch}
                 />
             </Col>
-
             <Col span={6} style={{ display: "flex", gap: "20px", alignItems: 'center' }}>
                 <LoadingComponent isLoading={loading}>
                     <WrapperAccout>
-                        {!isAdminPage && (<UserOutlined style={{ fontSize: '30px' }} />)}
+                        {!isAdminPage && <UserOutlined style={{ fontSize: '30px' }} />}
                         {user?.access_token ? (
-                            <Popover content={content} trigger="click">
+                            <Popover content={content} trigger="click" placement="bottomRight">
                                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <span>{user.name || user.email}</span>
-                                    <img src={user.avatar}
+                                    <span>{userName}</span>
+                                    <img
+                                        src={user.avatar}
+                                        alt="Avatar"
                                         style={{
                                             margin: '5px',
                                             borderRadius: '50%',
@@ -114,9 +125,9 @@ const HeaderComponent = ({ isHidenCart = false, isAdminPage = false, isName = fa
                         )}
                     </WrapperAccout>
                 </LoadingComponent>
-                {!isHidenCart && (
+                {!isHiddenCart && (
                     <div onClick={handleUserCard} style={{ cursor: 'pointer' }}>
-                        <Badge count={order?.orderItems?.length} size='small'>
+                        <Badge count={order?.orderItems?.length || 0} size="small">
                             <ShoppingCartOutlined style={{ fontSize: '30px', color: "black" }} />
                         </Badge>
                         <WrapperTextHeaderSmall>Giỏ hàng</WrapperTextHeaderSmall>
@@ -125,6 +136,6 @@ const HeaderComponent = ({ isHidenCart = false, isAdminPage = false, isName = fa
             </Col>
         </Wrapperheader>
     );
-}
+};
 
 export default HeaderComponent;
