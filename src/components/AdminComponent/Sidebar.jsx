@@ -5,11 +5,13 @@ import { UilSignOutAlt } from "@iconscout/react-unicons";
 import { SidebarData } from './Data/Data';
 import { UilBars } from "@iconscout/react-unicons";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { Popover } from "antd";
 
 const Sidebar = ({ setActiveComponent }) => { // Nhận setActiveComponent từ props
   const [selected, setSelected] = useState(0);
   const [expanded, setExpaned] = useState(true);
-
+  const navigate = useNavigate();
   const handleNavigate = (index, item) => {
     setSelected(index);
     if (item.heading === "Orders") {
@@ -24,6 +26,19 @@ const Sidebar = ({ setActiveComponent }) => { // Nhận setActiveComponent từ 
       setActiveComponent(null); // Ẩn ManageOrder và ManageCustomer cho các mục khác
     }
   };
+  const handleBackHome = () => {
+    navigate('/')
+  }
+  const content = (
+    <div style={{ cursor: 'pointer' }}>
+
+      <>
+        <p onClick={handleBackHome}>Trở về trang mua hàng</p>
+
+      </>
+
+    </div>
+  );
 
   return (
     <>
@@ -33,13 +48,15 @@ const Sidebar = ({ setActiveComponent }) => { // Nhận setActiveComponent từ 
       <motion.div className='sidebar'
         animate={window.innerWidth <= 768 ? `${expanded}` : ''}>
         {/* Logo */}
-        <div className="logo" style={{ marginLeft: '10px' }}>
-          <img src={Logo} alt="logo" />
-          <span>
-            Sh<span>o</span>ps
-          </span>
-        </div>
+        <Popover content={content} trigger="click" placement="bottomRight">
 
+          <div className="logo" style={{ marginLeft: '10px' }}>
+            <img src={Logo} alt="logo" />
+            <span>
+              Sh<span>o</span>ps
+            </span>
+          </div>
+        </Popover>
         <div className="menu">
           {SidebarData.map((item, index) => (
             <div
@@ -53,7 +70,7 @@ const Sidebar = ({ setActiveComponent }) => { // Nhận setActiveComponent từ 
           ))}
           {/* signoutIcon */}
           <div className="menuItem">
-            <UilSignOutAlt /> Logout
+            <UilSignOutAlt onClick={handleBackHome} /> Logout
           </div>
         </div>
       </motion.div>

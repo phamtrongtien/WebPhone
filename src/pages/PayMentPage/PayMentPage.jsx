@@ -5,25 +5,26 @@ import { useMutationHooks } from '../../hook/useMutationHook';
 import * as UserService from '../../services/UserService';
 import FooterComponent from '../../components/FooterComponent/FooterComponent';
 import * as OrderService from '../../services/OrderService';
-import './style.css'
+import './style.css';
 import { useNavigate } from 'react-router-dom';
 import StepComponent from '../../components/StepComponent/Stepcomponent';
+import { PayPalButton } from "react-paypal-button-v2";
+import * as PaymentService from '../../services/PaymentService'
 const { Title } = Typography;
 const { Option } = Select;
 
 const PayMentPage = () => {
     const order = useSelector((state) => state.order);
     const user = useSelector((state) => state.user);
-    // const [selectedProducts, setSelectedProducts] = useState([]);  // Track selected products for payment
-    // const [address, setAddress] = useState('Mộ Lao, Hà Đông, Hà Nội');
     const [paymentMethod, setPaymentMethod] = useState('creditCard');
-    const [shippingMethod, setShippingMethod] = useState('standard'); // New state for shipping method
+    const [shippingMethod, setShippingMethod] = useState('standard');
     const navigate = useNavigate();
+    const [sdkReady, setSdkReady] = useState(false)
     const [stateUser, setStateUser] = useState({
         name: '',
         phone: null,
         address: '',
-        city: ''
+        city: '',
     });
 
     const [inOpenModelUpdateInfo, setInOpenModelUpdateInfo] = useState(false);
@@ -33,10 +34,8 @@ const PayMentPage = () => {
     const shippingFees = {
         standard: 20000,
         express: 50000,
-        free: 0
-    }; // Different shipping fees based on method
-
-    // Update user info on user data change
+        free: 0,
+    };
 
     useEffect(() => {
         if (user) {
@@ -53,14 +52,11 @@ const PayMentPage = () => {
         const { id, token, ...rests } = data;
         return UserService.updateUser(id, { ...rests }, token);
     });
-    const mutationAddOrder = useMutationHooks(
-        (data) => {
-            const { token, ...rests } = data;
 
-            const res = OrderService.createOrder({ ...rests }, token);
-            return res;
-        }
-    );
+    const mutationAddOrder = useMutationHooks((data) => {
+        const { token, ...rests } = data;
+        return OrderService.createOrder({ ...rests }, token);
+    });
 
     const totalPrice = order.orderItems.length
         ? order.orderItems.reduce(
@@ -69,28 +65,33 @@ const PayMentPage = () => {
         ) + shippingFees[shippingMethod]
         : 0;
 
-
-    // Handle payment confirmation
     const handleAddOrder = () => {
+        const isPaid = paymentMethod !== 'cashOnDelivery';
+        const paidAt = new Date().toISOString(); // Lấy thời gian hiện tại nếu đã thanh toán
+
         mutationAddOrder.mutate(
             {
-                token: user?.access_token, orderItems: order?.orderItemsSlected,
+                token: user?.access_token,
                 orderItems: order.orderItems,
                 shippingAddress: {
-                    fullName: user.name, phone: user.phone, address: user.address, city: user.city,
-                }
-                ,
+                    fullName: user.name,
+                    phone: user.phone,
+                    address: user.address,
+                    city: user.city,
+                },
                 paymentMethod: paymentMethod,
                 itemsPrice: totalPrice,
                 shippingPrice: shippingFees[shippingMethod],
                 totalPrice: totalPrice,
                 user: user?.id,
-
+                isPaid: isPaid,
+                paidAt: paidAt, // Thêm trường paidAt vào đây
             },
             {
                 onSuccess: () => {
-                    message.success('Đặt hàng thành công')
-                }
+                    message.success('Đặt hàng thành công');
+                    handleSuccess();
+                },
             }
         );
     };
@@ -99,7 +100,6 @@ const PayMentPage = () => {
         setInOpenModelUpdateInfo(true);
     };
 
-    // Handle user information updates
     const handleOkInfo = () => {
         const { name, address, city, phone } = stateUser;
         if (name && address && city && phone) {
@@ -124,13 +124,13 @@ const PayMentPage = () => {
         }
     };
 
-    // Handle form input changes
     const handleOnChange = (value, name) => {
         setStateUser({
             ...stateUser,
             [name]: value,
         });
     };
+
     const handleSuccess = () => {
         navigate('/pay-success', {
             state: {
@@ -138,26 +138,79 @@ const PayMentPage = () => {
                 order: order.orderItems,
                 shippingPrice: shippingFees[shippingMethod],
                 shippingMethod: shippingMethod,
+            },
+        });
+    };
+
+    const items = [
+        {
+            title: 'Đặt hàng',
+            description: '',
+        },
+        {
+            title: 'Chọn phương thức thanh toán',
+            description: '',
+        },
+        {
+            title: 'Thanh toán thành công',
+            description: '',
+        },
+    ];
+
+    const addPaypalScript = async () => {
+
+        const { dataConfig } = await PaymentService.getConfig();
+
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = `https://www.paypal.com/sdk/js?client-id=${dataConfig}`
+        script.async = true;
+        script.onload = () => {
+            setSdkReady(true);
+        };
+        document.body.appendChild(script);
+
+    };
 
 
+
+    const onSuccessPaypal = (details, data) => {
+
+        mutationAddOrder.mutate(
+            {
+                token: user?.access_token,
+                orderItems: order.orderItems,
+                shippingAddress: {
+                    fullName: user.name,
+                    phone: user.phone,
+                    address: user.address,
+                    city: user.city,
+                },
+                paymentMethod: paymentMethod,
+                itemsPrice: totalPrice,
+                shippingPrice: shippingFees[shippingMethod],
+                totalPrice: totalPrice,
+                user: user?.id,
+                isPaid: true,
+                paidAt: details.update_time
+            },
+            {
+                onSuccess: () => {
+                    message.success('Đặt hàng thành công');
+                    handleSuccess();
+                },
             }
-        })
+        );
     }
-    const items =
-        [
-            {
-                title: 'Đặt hàng',
-                description: '',
-            },
-            {
-                title: 'chọn phương thức thanh toán',
-                description: '',
-            },
-            {
-                title: 'Thanh toán thành công',
-                description: '',
-            },
-        ];
+    useEffect(() => {
+        if (!window.paypal) {
+            addPaypalScript()
+
+        }
+        else {
+            setSdkReady(true)
+        }
+    }, [])
     return (
         <div className="payment-page">
             <Title level={2} className="page-title">Thông tin thanh toán 💳</Title>
@@ -168,7 +221,7 @@ const PayMentPage = () => {
             <Row gutter={[16, 16]} justify="center" align="middle">
                 <Col xs={24} lg={12}>
                     <Card title="Chi tiết thanh toán 📝" className="payment-details-card">
-                        <div className='left'>
+                        <div className="left">
                             <Title level={4}>Phương thức thanh toán 💳</Title>
                             <Select
                                 value={paymentMethod}
@@ -188,8 +241,10 @@ const PayMentPage = () => {
                                 <Option value="standard">Giao hàng tiêu chuẩn 📦</Option>
                                 <Option value="express">Giao hàng nhanh 🚀</Option>
                                 <Option value="free">Miễn phí giao hàng 🎉</Option>
-                            </Select></div>
-                        <div className='right'><Title level={4}>Địa chỉ giao nhận hàng 🏠</Title>
+                            </Select>
+                        </div>
+                        <div className="right">
+                            <Title level={4}>Địa chỉ giao nhận hàng 🏠</Title>
                             <div className="address-input">
                                 <p>{`${user.address} Thành phố-${user.city}`}</p>
                                 <p>{`Phone-${user.phone}`}</p>
@@ -197,25 +252,36 @@ const PayMentPage = () => {
                             <span
                                 style={{ color: 'blue', cursor: 'pointer' }}
                                 onClick={handleAddress}
-                            >Thay đổi địa chỉ</span>
+                            >
+                                Thay đổi địa chỉ
+                            </span>
 
                             <div className="payment-summary">
                                 <div><strong>Tiền hàng:</strong> {totalPrice - shippingFees[shippingMethod]} đ 💵</div>
                                 <div><strong>Phí giao hàng:</strong> {shippingFees[shippingMethod]} đ 🚚</div>
                                 <div className="total-price"><strong>Tổng tiền:</strong> {totalPrice} đ 💸</div>
                             </div>
-                            <Button
-                                type="primary"
-                                className="confirm-button"
-                                onClick={handleAddOrder}
-                            >
-                                <span style={{ color: 'white' }} onClick={handleSuccess}>Xác nhận thanh toán ✅</span>
-                            </Button></div>
+                            {(paymentMethod === 'paypal') ? (
+                                <><PayPalButton
+                                    amount="0.01"
+                                    // shippingPreference="NO_SHIPPING" // default is "GET_FROM_FILE"
+                                    onSuccess={onSuccessPaypal}
+                                /></>
+                            ) : (
+                                <Button
+                                    type="primary"
+                                    className="confirm-button"
+                                    onClick={handleAddOrder}
+                                >
+                                    Xác nhận thanh toán ✅
+                                </Button>
+                            )}
+                        </div>
                     </Card>
                 </Col>
             </Row>
             <Modal
-                title={"Cập nhật thông tin"}
+                title="Cập nhật thông tin"
                 open={inOpenModelUpdateInfo}
                 onCancel={() => setInOpenModelUpdateInfo(false)}
                 footer={null}

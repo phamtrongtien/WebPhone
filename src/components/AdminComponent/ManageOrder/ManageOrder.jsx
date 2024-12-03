@@ -1,128 +1,158 @@
-import React, { useState } from 'react';
-import { Table, Button, Typography, Tag } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Button, Typography, Tag, Modal, Card, Row, Col, Table } from 'antd';
 import { UilClipboardAlt } from "@iconscout/react-unicons";
 import './style.css';
+import * as OrderService from '../../../services/OrderService';
+import { useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
 
 const { Title } = Typography;
 
 const ManageOrder = () => {
-    // Dữ liệu mẫu đơn hàng
-    const initialOrders = [
-        {
-            key: '1',
-            orderID: '001',
-            customerName: 'Andrew Thomas',
-            product: 'Apple Smart Watch',
-            amount: '2500mh battery',
-            status: 'Đã hoàn thành',
-        },
-        {
-            key: '2',
-            orderID: '002',
-            customerName: 'James Bond',
-            product: 'Samsung Charger',
-            amount: '3000mh battery',
-            status: 'Đang xử lý',
-        },
-        {
-            key: '3',
-            orderID: '003',
-            customerName: 'Iron Man',
-            product: 'Apple Smart Watch, Samsung Gear',
-            amount: '2500mh battery',
-            status: 'Đã hủy',
-        },
-    ];
+    const user = useSelector((state) => state.user);
 
-    const [orders, setOrders] = useState(initialOrders);
+    // Khai báo state để lưu đơn hàng
+    const [orders, setOrders] = useState([]);
+    const [isModalVisible, setIsModalVisible] = useState(false); // State để điều khiển Modal
+    const [orderDetails, setOrderDetails] = useState(null); // State lưu thông tin chi tiết đơn hàng
+
+    const getAllOrder = async () => {
+        try {
+            const res = await OrderService.getAllOrder(user.access_token);
+            setOrders(res.data);
+        } catch (error) {
+            console.error("Lỗi khi lấy dữ liệu đơn hàng:", error);
+            setOrders([]);
+        }
+    };
+
+    const { isLoading: isLoadingOrder } = useQuery({
+        queryKey: ['orderss'],
+        queryFn: getAllOrder,
+        onSuccess: (data) => {
+            setOrders(data || []);
+        }
+    });
 
     const columns = [
         {
             title: 'ID Đơn hàng',
-            dataIndex: 'orderID',
-            key: 'orderID',
+            dataIndex: '_id',
+            key: '_id',
         },
         {
             title: 'Tên khách hàng',
-            dataIndex: 'customerName',
-            key: 'customerName',
+            dataIndex: 'shippingAddress',
+            key: 'shippingAddress',
+            render: (address) => address.fullName,
         },
         {
             title: 'Sản phẩm',
-            dataIndex: 'product',
-            key: 'product',
+            dataIndex: 'orderItems',
+            key: 'orderItems',
+            render: (orderItems) => orderItems.map(item => item.name).join(', '),
         },
         {
-            title: 'Số lượng',
-            dataIndex: 'amount',
-            key: 'amount',
+            title: 'Tổng giá',
+            dataIndex: 'totalPrice',
+            key: 'totalPrice',
+            render: (text) => text.toLocaleString() + ' VND',
         },
         {
-            title: 'Trạng thái',
-            dataIndex: 'status',
-            key: 'status',
-            render: (text) => {
-                let color;
-                switch (text) {
-                    case 'Đã hoàn thành':
-                        color = 'green';
-                        break;
-                    case 'Đang xử lý':
-                        color = 'orange';
-                        break;
-                    case 'Đã hủy':
-                        color = 'red';
-                        break;
-                    default:
-                        color = 'default';
-                }
-                return (
-                    <Tag color={color} key={text}>
-                        {text}
-                    </Tag>
-                );
-            },
+            title: 'Trạng thái thanh toán',
+            dataIndex: 'isPaid',
+            key: 'isPaid',
+            render: (text) => (
+                <Tag color={text ? 'green' : 'red'}>
+                    {text ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                </Tag>
+            ),
+        },
+        {
+            title: 'Trạng thái giao hàng',
+            dataIndex: 'isDelivered',
+            key: 'isDelivered',
+            render: (text) => (
+                <Tag color={text ? 'green' : 'orange'}>
+                    {text ? 'Đã giao' : 'Chưa giao'}
+                </Tag>
+            ),
         },
         {
             title: 'Hành động',
             key: 'action',
             render: (_, record) => (
-                <div>
-                    <Button type="link" onClick={() => handleApprove(record)}>
-                        Duyệt
-                    </Button>
-                    <Button type="link" onClick={() => handleDelete(record)}>
-                        Xóa
-                    </Button>
-                    <Button type="link" onClick={() => handleViewDetails(record)}>
-                        Xem chi tiết
-                    </Button>
-                </div>
+                <Button type="link" onClick={() => handleViewDetails(record)}>
+                    Xem chi tiết
+                </Button>
             ),
         },
     ];
 
     const handleViewDetails = (order) => {
-        alert(`Chi tiết đơn hàng ${order.orderID}: ${order.product} - ${order.status}`);
+        setOrderDetails(order);  // Cập nhật thông tin chi tiết đơn hàng
+        setIsModalVisible(true);  // Mở modal
     };
 
-    const handleApprove = (order) => {
-        alert(`Duyệt đơn hàng ${order.orderID}`);
-        // Logic để duyệt đơn hàng
+    const handleCancel = () => {
+        setIsModalVisible(false);  // Đóng modal
+        setOrderDetails(null);  // Reset thông tin đơn hàng khi đóng modal
     };
 
-    const handleDelete = (order) => {
-        const newOrders = orders.filter(o => o.key !== order.key);
-        setOrders(newOrders);
-        alert(`Xóa đơn hàng ${order.orderID}`);
-    };
+    if (isLoadingOrder) {
+        return <div>Loading...</div>;
+    }
 
     return (
-        <div className="orders-container">
+        <div className="orderss-container">
             <Title level={3}>
                 <UilClipboardAlt /> Đơn hàng
             </Title>
-            <Table columns={columns} dataSource={orders} />
+            <Table
+                columns={columns}
+                dataSource={orders} // Sử dụng state để render dữ liệu
+                rowKey="_id"
+            />
+
+            <Modal
+                title={`Chi tiết đơn hàng ${orderDetails?._id}`}
+                visible={isModalVisible}
+                onCancel={handleCancel}
+                footer={null}
+                width={800}
+            >
+                {orderDetails && (
+                    <div>
+                        <Card title="Thông tin khách hàng" bordered={false}>
+                            <p><strong>Tên khách hàng:</strong> {orderDetails.shippingAddress.fullName}</p>
+                            <p><strong>Địa chỉ:</strong> {orderDetails.shippingAddress.address}</p>
+                            <p><strong>Số điện thoại:</strong> {orderDetails.shippingAddress.phone}</p>
+                        </Card>
+
+                        <Card title="Sản phẩm trong đơn hàng" bordered={false} style={{ marginTop: 20 }}>
+                            <Row gutter={[16, 16]}>
+                                {orderDetails.orderItems.map((item) => (
+                                    <Col span={8} key={item._id}>
+                                        <Card hoverable>
+                                            <p><strong>Tên sản phẩm:</strong> {item.name}</p>
+                                            <img src={item.image} />
+                                            <p><strong>Số lượng:</strong> {item.amount}</p>
+                                            <p><strong>Giá:</strong> {item.price.toLocaleString()} VND</p>
+                                        </Card>
+                                    </Col>
+                                ))}
+                            </Row>
+                        </Card>
+
+                        <Card title="Thông tin thanh toán" bordered={false} style={{ marginTop: 20 }}>
+                            <p><strong>Tổng giá:</strong> {orderDetails.totalPrice.toLocaleString()} VND</p>
+                            <p><strong>Hình thức thanh toán</strong></p>
+                            <p><strong>Trạng thái thanh toán:</strong> {orderDetails.isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}</p>
+                            <p><strong>Trạng thái giao hàng:</strong> {orderDetails.isDelivered ? 'Đã giao' : 'Chưa giao'}</p>
+                        </Card>
+                    </div>
+                )}
+            </Modal>
         </div>
     );
 };

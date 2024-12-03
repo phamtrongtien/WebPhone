@@ -1,12 +1,8 @@
-import { Col, Image, Row, Button, Select, Rate } from "antd";
+import { Col, Image, Button, Rate } from "antd";
 import React, { useState } from "react";
-import conan from "../../assets/img/conan.webp";
-import conanDetail from "../../assets/img/conanDetail.webp";
-import conanDetail1 from "../../assets/img/conanDetail1.webp";
+
 import {
   WrapperAddressProduct,
-  WrapperColImage,
-  WrapperImageSmall,
   WrapperPriceProduct,
   WrapperPriceTextProduct,
   WrapperProductDetail,
@@ -94,7 +90,6 @@ const ProductDetailComponent = ({ productId }) => {
     updateRating.mutate(value); // Update the rating on the server
   };
   const hasRated = userRating !== null;
-  console.log("produt", products)
   return (
     <WrapperProductDetail>
       <Col span={10}>

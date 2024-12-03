@@ -85,13 +85,18 @@ const HeaderComponent = ({ isHiddenCart = false, isAdminPage = false, isName = f
                 )}
             </Col>
             <Col span={11}>
-                <ButtonInputsearch
-                    placeholder="Tìm kiếm sản phẩm"
-                    textButton="Search"
-                    size="large"
-                    style={{ width: 100 }}
-                    onChange={onSearch}
-                />
+                {!isName ? (
+                    <ButtonInputsearch
+                        placeholder="Tìm kiếm sản phẩm"
+                        textButton="Search"
+                        size="large"
+                        style={{ width: 100 }}
+                        onChange={onSearch}
+                    />
+                ) : (
+                    <></>
+                )}
+
             </Col>
             <Col span={6} style={{ display: "flex", gap: "20px", alignItems: 'center' }}>
                 <LoadingComponent isLoading={loading}>
@@ -125,7 +130,7 @@ const HeaderComponent = ({ isHiddenCart = false, isAdminPage = false, isName = f
                         )}
                     </WrapperAccout>
                 </LoadingComponent>
-                {!isHiddenCart && (
+                {!isHiddenCart && !isAdminPage && (
                     <div onClick={handleUserCard} style={{ cursor: 'pointer' }}>
                         <Badge count={order?.orderItems?.length || 0} size="small">
                             <ShoppingCartOutlined style={{ fontSize: '30px', color: "black" }} />

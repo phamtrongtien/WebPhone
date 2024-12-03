@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { WrapperContent, WrapperLableText, WrapperNavbar, WrapperTextPrice } from './style';
+import { WrapperNavbar, WrapperContent, WrapperLableText, WrapperTextPrice } from './style';
 import { Checkbox, Rate } from 'antd';
 import * as ProductService from '../../services/ProductService';
 import TypeProduct from '../TypeProduct/TypeProduct';
 
 const desc = ['terrible', 'bad', 'normal', 'good', 'wonderful'];
 
-const NavBarComponent = () => {
-    const [value, setValue] = useState(3);
+const NavBarComponent = ({ onPriceFilter, onStarFilter }) => {
+    const [value, setValue] = useState(3); // Default star rating value is 3
     const [typeProduct, setTypeProduct] = useState([]);
     const [isExpanded, setIsExpanded] = useState(false);
-    const [showAll, setShowAll] = useState(false);
     const [productData, setProductData] = useState({
         text: [],
         checkbox: [],
@@ -25,22 +24,18 @@ const NavBarComponent = () => {
         try {
             const response = await ProductService.getProductAll();
             const products = response.data || [];
-            const priceRanges = {
-                below1M: products.filter((item) => item.price < 1_000_000).map((item) => item.name),
-                between2MTo5M: products.filter((item) => item.price >= 2_000_000 && item.price <= 5_000_000).map((item) => item.name),
-                above5M: products.filter((item) => item.price > 5_000_000).map((item) => item.name)
-            };
+            const priceRanges = [
+                { range: 'Dưới 1 triệu', filter: (item) => item.price < 1_000_000 },
+                { range: 'Từ 2 triệu đến 5 triệu', filter: (item) => item.price >= 2_000_000 && item.price <= 5_000_000 },
+                { range: 'Trên 5 triệu', filter: (item) => item.price > 5_000_000 }
+            ];
             const types = [...new Set(products.map((item) => item.type))].sort();
 
             setProductData({
                 text: types,
                 checkbox: products.map((item) => ({ value: item.id, label: item.category })),
                 star: products.map((item) => item.rating),
-                price: [
-                    { range: 'Dưới 1 triệu', items: priceRanges.below1M },
-                    { range: 'Từ 2 triệu đến 5 triệu', items: priceRanges.between2MTo5M },
-                    { range: 'Trên 5 triệu', items: priceRanges.above5M }
-                ]
+                price: priceRanges
             });
         } catch (error) {
             console.error('Error fetching products:', error);
@@ -63,7 +58,7 @@ const NavBarComponent = () => {
     // Handle click outside
     const handleClickOutside = useCallback((e) => {
         if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
-            setShowAll(false); // Hide the "Xem thêm" button if clicked outside
+            setIsExpanded(false); // Hide the "See more" button if clicked outside
         }
     }, []);
 
@@ -74,13 +69,28 @@ const NavBarComponent = () => {
         };
     }, [handleClickOutside]);
 
+    // Handle star filter change
+    const handleStarFilterChange = (star) => {
+        setValue(star); // Update the value immediately
+        if (onStarFilter) {
+            onStarFilter(star); // Pass the selected star filter to the parent
+        }
+    };
+
     // Handle toggle expand
     const handleToggleExpand = () => setIsExpanded(true);
+
+    // Handle price filter click
+    const handlePriceClick = (priceFilter) => {
+        if (onPriceFilter) {
+            onPriceFilter(priceFilter); // Pass the price filter to the parent
+        }
+    };
 
     // Render content based on type
     const renderContent = (type) => {
         switch (type) {
-            case 'text':
+            case 'Danh mục':
                 const displayedTypes = isExpanded ? typeProduct : typeProduct.slice(0, 6);
                 return (
                     <>
@@ -106,21 +116,18 @@ const NavBarComponent = () => {
                 return (
                     <Rate
                         tooltips={desc}
-                        onChange={setValue}
-                        value={value}
+                        onChange={handleStarFilterChange}
+                        value={value} // Ensure value is updated
                     />
                 );
             case 'price':
                 return productData.price.map((range, index) => (
-                    <div key={index}>
-                        <strong>{range.range}</strong>
-                        {range.items.length > 0 ? (
-                            range.items.map((item, subIndex) => (
-                                <WrapperTextPrice key={subIndex}>{item}</WrapperTextPrice>
-                            ))
-                        ) : (
-                            <WrapperTextPrice>Không có sản phẩm</WrapperTextPrice>
-                        )}
+                    <div
+                        key={index}
+                        style={{ cursor: 'pointer', marginBottom: '8px', color: '#007bff' }}
+                        onClick={() => handlePriceClick(range.filter)} // Handle price filter
+                    >
+                        {range.range}
                     </div>
                 ));
             default:
@@ -130,14 +137,13 @@ const NavBarComponent = () => {
 
     return (
         <WrapperNavbar>
-            {['text', 'checkbox', 'star', 'price'].map((type, i) => (
+            {['Danh mục', 'star', 'price'].map((type, i) => (
                 <React.Fragment key={type}>
-                    <WrapperLableText>Label {i + 1}</WrapperLableText>
                     <WrapperContent
                         style={{ cursor: 'pointer' }}
                         ref={type === 'text' ? wrapperRef : null} // Attach ref to the label 1 section
                     >
-                        {renderContent(type)}
+                        <WrapperLableText>{type}</WrapperLableText>{renderContent(type)}
                     </WrapperContent>
                 </React.Fragment>
             ))}

@@ -33,8 +33,17 @@ const HomePage = () => {
 
     // Fetch sản phẩm mới (8 sản phẩm mới nhất)
     const fetchNewProducts = async () => {
-        const response = await ProductService.getProductAll();
-        return response.data.sort((a, b) => b.id - a.id).slice(0, 8);
+        try {
+            const response = await ProductService.getProductAll();
+            if (!Array.isArray(response.data)) {
+                throw new Error('Response data is not an array');
+            }
+            // Sắp xếp theo id tăng dần và lấy 8 sản phẩm mới nhất
+            return response.data.sort((a, b) => a.id - b.id).slice(-8);
+        } catch (error) {
+            console.error('Error fetching new products:', error);
+            return [];
+        }
     };
 
     // Fetch sản phẩm bán chạy (8 sản phẩm bán chạy nhất)

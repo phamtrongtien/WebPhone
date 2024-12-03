@@ -30,3 +30,37 @@ export const getDetailOrderByUserId = async (id, access_token) => {
         throw error;
     }
 };
+export const deleteOrder = async (id, access_token, orderItem) => {
+    try {
+        const res = await axios.delete(
+            `${process.env.REACT_APP_API_URL_BACKEND}/order/delete-order/${id}`,
+            {
+                headers: {
+                    token: `Bearer ${access_token}`,
+                },
+                data: orderItem, // data should be inside the config object
+            }
+        );
+        return res.data;
+    } catch (error) {
+        console.error('Error deleting order:', error);
+        throw error;
+    }
+};
+export const getAllOrder = async (access_token) => {
+    try {
+        const res = await axios.get(
+            `${process.env.REACT_APP_API_URL_BACKEND}/order/get-all-order`,
+            {
+                headers: {
+                    token: `Bearer ${access_token}`,
+                },
+
+            }
+        );
+        return res.data;
+    } catch (error) {
+        console.error('Error deleting order:', error);
+        throw error;
+    }
+};
