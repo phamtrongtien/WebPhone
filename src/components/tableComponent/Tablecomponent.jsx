@@ -120,7 +120,7 @@ const Tablecomponent = (props) => {
                     dataSource={filteredProducts}
                     loading={isLoadingProduct}
                     pagination={{
-                        pageSize: 5,
+                        pageSize: 3,
                         total: filteredProducts.length,
                         showTotal: (total) => `Tổng cộng ${total} sản phẩm`,
                     }}

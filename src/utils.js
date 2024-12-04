@@ -19,7 +19,7 @@ export const getBase64 = (file) => {
 
 export const converPrice = (product) => {
     try {
-        const result = product.price
+        const result = product.price.toLocaleString()
         return result
     } catch (error) {
         return null

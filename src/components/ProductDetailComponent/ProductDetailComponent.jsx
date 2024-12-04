@@ -148,7 +148,7 @@ const ProductDetailComponent = ({ productId }) => {
         </WrapperAddressProduct>.
         {/* Thêm lựa chọn màu sắc */}
         <div style={{ marginBottom: "10px" }}>
-          <span style={{ fontSize: "16px", fontWeight: "500" }}>Chọn Màu: </span>
+          {/* <span style={{ fontSize: "16px", fontWeight: "500" }}>Chọn Màu: </span> */}
           {/* <Select
             defaultValue={selectedColor}
             style={{ width: 120 }}

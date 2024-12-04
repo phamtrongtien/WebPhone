@@ -8,7 +8,6 @@ import {
   WrapperOuterContainer,
   WrapperInnerContainer,
   WrapperImageContainer,
-  WrapperHeader,
   WrapperCard
 } from './style';
 import InputFormComponent from '../../components/InputFormComponent/InputFormComponent';
@@ -29,49 +28,58 @@ const SigupPage = () => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [confirmpassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const mutation = useMutationHooks(
-    data => UserService.sigUpUser(data)
-  );
+  const mutation = useMutationHooks(data => UserService.sigUpUser(data));
+  const { data, isSuccess, isError } = mutation;
 
-  const { data, isSuccess, isError } = mutation;  // Đưa phần này lên trước khi sử dụng
+  // Kiểm tra mật khẩu
+  const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[!@#$%^&*])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setPasswordError('Mật khẩu phải có ít nhất 8 ký tự, bao gồm số và ký tự đặc biệt.');
+      return false;
+    }
+    setPasswordError('');
+    return true;
+  };
 
-  const handleOnchangeEmail = (value) => {
-    setEmail(value);
-  }
+  const handleOnchangeEmail = (value) => setEmail(value);
   const handleOnchangePassword = (value) => {
     setPassword(value);
-  }
-  const handleOnchangeName = (value) => {
-    setName(value);
-  }
-  const handleOnchangePhone = (value) => {
-    setPhone(value);
-  }
-  const handleOnchangeConfirmPassword = (value) => {
-    setConfirmPassword(value);
-  }
-  const handleSigup = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    validatePassword(value);
+  };
+  const handleOnchangeName = (value) => setName(value);
+  const handleOnchangePhone = (value) => setPhone(value);
+  const handleOnchangeConfirmPassword = (value) => setConfirmPassword(value);
 
-    mutation.mutate({
-      name, email, password, confirmpassword, phone
-    }, {
-      onSuccess: (data) => {
-        console.log("Đăng ký thành công:", data);
-      },
-      onError: (error) => {
-        console.log("Lỗi đăng ký:", error);
+  const handleSigup = () => {
+    if (!validatePassword(password)) {
+      return;
+    }
+    if (password !== confirmpassword) {
+      message.error('Mật khẩu xác nhận không khớp.');
+      return;
+    }
+
+    setIsLoading(true);
+    mutation.mutate(
+      { name, email, password, confirmpassword, phone },
+      {
+        onSuccess: (data) => {
+          console.log('Đăng ký thành công:', data);
+        },
+        onError: (error) => {
+          console.log('Lỗi đăng ký:', error);
+        }
       }
-    });
-  }
+    );
+    setTimeout(() => setIsLoading(false), 1000);
+  };
 
   useEffect(() => {
-    if (isSuccess === true) {
+    if (isSuccess) {
       message.success();
       handleSignInClick();
     } else if (isError) {
@@ -92,10 +100,12 @@ const SigupPage = () => {
         <WrapperInnerContainer>
           <WrapperContainerRight>
             <WrapperImageContainer>
-              <Image src={anhdk} preview={false} alt='anhdk' />
+              <Image src={anhdk} preview={false} alt="anhdk" />
               <div>
                 <h4 style={{ color: '#0077CC' }}>Mua sắm tại BEEBEE</h4>
-                <h4 style={{ color: '#0077CC' }}>Siêu ưu đãi mỗi ngày <HeartOutlined /></h4>
+                <h4 style={{ color: '#0077CC' }}>
+                  Siêu ưu đãi mỗi ngày <HeartOutlined />
+                </h4>
               </div>
             </WrapperImageContainer>
           </WrapperContainerRight>
@@ -105,18 +115,36 @@ const SigupPage = () => {
             </button>
             <h2>Đăng ký tài khoản</h2>
 
-            <InputFormComponent placeholder='tên' value={name} onChange={handleOnchangeName} />
-            <InputFormComponent placeholder='số điện thoại' value={phone} onChange={handleOnchangePhone} />
-            <InputFormComponent placeholder='abcde@gmail.com' value={email} onChange={handleOnchangeEmail} />
-            <InputFormComponent placeholder='password' type='password' value={password} onChange={handleOnchangePassword} />
-            <InputFormComponent placeholder='conformpassword' type='password' value={confirmpassword} onChange={handleOnchangeConfirmPassword} />
+            <InputFormComponent placeholder="tên" value={name} onChange={handleOnchangeName} />
+            <InputFormComponent placeholder="số điện thoại" value={phone} onChange={handleOnchangePhone} />
+            <InputFormComponent placeholder="abcde@gmail.com" value={email} onChange={handleOnchangeEmail} />
+            <InputFormComponent
+              placeholder="password"
+              type="password"
+              value={password}
+              onChange={handleOnchangePassword}
+            />
+            {passwordError && <span style={{ color: 'red' }}>{passwordError}</span>}
+            <InputFormComponent
+              placeholder="confirm password"
+              type="password"
+              value={confirmpassword}
+              onChange={handleOnchangeConfirmPassword}
+            />
 
             <WrapperLoginButton>
-              {data?.status === "ERR" && <span style={{ color: 'red' }}>{data?.message}</span>}
+              {data?.status === 'ERR' && <span style={{ color: 'red' }}>{data?.message}</span>}
 
               <LoadingComponent isLoading={isLoading}>
                 <ButtonComponent
-                  disabled={!email.length || !password.length || !confirmpassword.length || !name.length || !phone.length}
+                  disabled={
+                    !email.length ||
+                    !password.length ||
+                    !confirmpassword.length ||
+                    !name.length ||
+                    !phone.length ||
+                    !!passwordError
+                  }
                   onClick={handleSigup}
                   size={40}
                   styleButton={{
@@ -124,9 +152,9 @@ const SigupPage = () => {
                     height: '48px',
                     width: '500px',
                     marginTop: '20px',
-                    opacity: !email || !password || !name || !phone || !confirmpassword ? 0.5 : 1
+                    opacity: !email || !password || !name || !phone || !confirmpassword || !!passwordError ? 0.5 : 1
                   }}
-                  textButton='Đăng ký'
+                  textButton="Đăng ký"
                   styleTextButton={{ color: 'white' }}
                 />
               </LoadingComponent>
@@ -148,6 +176,3 @@ const SigupPage = () => {
 };
 
 export default SigupPage;
-
-
-

@@ -39,11 +39,11 @@ export const SidebarData = [
     heading: "Products",
     path: "/admin/products",
   },
-  {
-    icon: UilChart,
-    heading: "Analytics",
-    path: "/admin/analytics",
-  },
+  // {
+  //   icon: UilChart,
+  //   heading: "Analytics",
+  //   path: "/admin/analytics",
+  // },
 ];
 
 // Analytics Cards Data

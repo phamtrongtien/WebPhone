@@ -107,7 +107,7 @@ const PaySuccessPage = () => {
                                                 cover={<img alt={item.name} src={item.image} className="product-image" />}
                                                 className="product-card"
                                             >
-                                                <Card.Meta title={item.name} description={`${item.price}VNĐ      Số lượng: ${item.amount} `} />
+                                                <Card.Meta title={item.name} description={`${item.price.toString()} VNĐ      Số lượng: ${item.amount} `} />
                                             </Card>
                                         </Col>
                                     ))}

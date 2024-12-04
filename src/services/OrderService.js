@@ -64,3 +64,20 @@ export const getAllOrder = async (access_token) => {
         throw error;
     }
 };
+export const updateDeliveryStatus = async (orderId, isDelivered, access_token) => {
+    try {
+        const res = await axios.put(
+            `${process.env.REACT_APP_API_URL_BACKEND}/order/update-delivery/${orderId}`,
+            { isDelivered },
+            {
+                headers: {
+                    token: `Bearer ${access_token}`,
+                },
+            }
+        );
+        return res.data;
+    } catch (error) {
+        console.error('Error updating delivery status:', error);
+        throw error;
+    }
+};

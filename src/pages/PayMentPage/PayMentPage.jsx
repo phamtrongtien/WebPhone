@@ -257,13 +257,13 @@ const PayMentPage = () => {
                             </span>
 
                             <div className="payment-summary">
-                                <div><strong>Tiền hàng:</strong> {totalPrice - shippingFees[shippingMethod]} đ 💵</div>
-                                <div><strong>Phí giao hàng:</strong> {shippingFees[shippingMethod]} đ 🚚</div>
-                                <div className="total-price"><strong>Tổng tiền:</strong> {totalPrice} đ 💸</div>
+                                <div><strong>Tiền hàng:</strong> {(totalPrice - shippingFees[shippingMethod]).toString()} đ 💵</div>
+                                <div><strong>Phí giao hàng:</strong> {shippingFees[shippingMethod].toString()} đ 🚚</div>
+                                <div className="total-price"><strong>Tổng tiền:</strong> {totalPrice.toString()} đ 💸</div>
                             </div>
                             {(paymentMethod === 'paypal') ? (
                                 <><PayPalButton
-                                    amount="0.01"
+                                    amount={(totalPrice / 25000).toFixed(2).toString()}
                                     // shippingPreference="NO_SHIPPING" // default is "GET_FROM_FILE"
                                     onSuccess={onSuccessPaypal}
                                 /></>

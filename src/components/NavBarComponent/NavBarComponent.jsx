@@ -25,9 +25,9 @@ const NavBarComponent = ({ onPriceFilter, onStarFilter }) => {
             const response = await ProductService.getProductAll();
             const products = response.data || [];
             const priceRanges = [
-                { range: 'Dưới 1 triệu', filter: (item) => item.price < 1_000_000 },
-                { range: 'Từ 2 triệu đến 5 triệu', filter: (item) => item.price >= 2_000_000 && item.price <= 5_000_000 },
-                { range: 'Trên 5 triệu', filter: (item) => item.price > 5_000_000 }
+                { range: 'Dưới 5 triệu', filter: (item) => item.price < 5_000_000 },
+                { range: 'Từ 5 triệu đến 10 triệu', filter: (item) => item.price >= 5_000_000 && item.price <= 10_000_000 },
+                { range: 'Trên 10 triệu', filter: (item) => item.price > 10_000_000 }
             ];
             const types = [...new Set(products.map((item) => item.type))].sort();
 
