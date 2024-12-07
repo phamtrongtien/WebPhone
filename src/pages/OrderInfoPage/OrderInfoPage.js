@@ -46,7 +46,7 @@ const OrderInfoPage = () => {
     };
 
     const handleConfirmCancel = () => {
-        const orderToCancelDetails = data.data.find((order) => order._id === orderToCancel);
+        const orderToCancelDetails = data?.data?.find((order) => order._id === orderToCancel);
         if (orderToCancelDetails) {
             deleteOrder({
                 orderId: orderToCancel,
@@ -88,7 +88,7 @@ const OrderInfoPage = () => {
         );
     }
 
-    const orderList = data.data;
+    const orderList = data?.data || [];  // Đảm bảo orderList luôn là một mảng hợp lệ
 
     const startIndex = (currentPage - 1) * 3;
     const paginatedOrders = orderList.slice(startIndex, startIndex + 3);

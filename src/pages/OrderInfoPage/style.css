@@ -132,3 +132,14 @@ strong {
     align-items: center;
   }
 }
+/* Button Cancel Order */
+button.ant-btn-danger {
+  border: 1px solid;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Hover Effect for Cancel Button */
+button.ant-btn-danger:hover {
+  background-color: red; /* Red background when hovering */
+  color: white; /* White text color on hover */
+}
