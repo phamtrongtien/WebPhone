@@ -14,6 +14,7 @@ const OrderInfoPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [expandedOrders, setExpandedOrders] = useState({});
     const [orderToCancel, setOrderToCancel] = useState(null);
+    const [activeTab, setActiveTab] = useState('pending'); // Tab hiện tại (Đang đặt hoặc Đã hủy)
 
     // Fetch dữ liệu đơn hàng
     const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
@@ -29,6 +30,16 @@ const OrderInfoPage = () => {
     const { mutate: deleteOrder, isLoading: isDeleting } = useMutation({
         mutationFn: ({ orderId, orderItems }) => OrderService.deleteOrder(orderId, user.access_token, orderItems),
         onSuccess: () => {
+            // Sau khi xóa thành công, gọi refetch để cập nhật lại danh sách đơn hàng
+            refetch();
+        },
+    });
+
+    // Mutation để đặt lại đơn hàng
+    const { mutate: createOrder, isLoading: iscreateOrdering } = useMutation({
+        mutationFn: (orderId) => OrderService.createOrder(orderId, user.access_token),
+        onSuccess: (data) => {
+            // Thay đổi isCancel thành false sau khi đặt lại thành công
             refetch();
         },
     });
@@ -53,12 +64,29 @@ const OrderInfoPage = () => {
                 orderItems: orderToCancelDetails.orderItems,
             });
         }
-        setOrderToCancel(null);
+
+        // Delay the page refresh using setTimeout
+        setTimeout(() => {
+            refetch(); // Call refetch to refresh data after cancellation
+        }, 500);
+
+        setOrderToCancel(null); // Đóng modal sau khi hủy
     };
 
     const handleCancelModal = () => {
-        setOrderToCancel(null);
+        setOrderToCancel(null); // Đóng modal nếu không xác nhận hủy
     };
+
+    const handleTabClick = (tab) => {
+        setActiveTab(tab); // Đổi tab hiện tại (đang đặt hoặc đã hủy)
+    };
+
+    useEffect(() => {
+        if (orderToCancel) {
+            // Khi orderToCancel thay đổi (khi đơn hàng bị hủy)
+            refetch(); // Thực hiện lại việc lấy dữ liệu sau khi đơn hàng bị hủy
+        }
+    }, [orderToCancel, refetch]); // Chạy lại mỗi khi orderToCancel thay đổi
 
     if (isLoading || isFetching) {
         return (
@@ -90,8 +118,13 @@ const OrderInfoPage = () => {
 
     const orderList = data?.data || [];  // Đảm bảo orderList luôn là một mảng hợp lệ
 
+    // Lọc đơn hàng theo tab đang chọn (Đang đặt hoặc Đã hủy)
+    const filteredOrders = orderList.filter(order =>
+        activeTab === 'pending' ? order.isCancel === false : order.isCancel === true
+    );
+
     const startIndex = (currentPage - 1) * 3;
-    const paginatedOrders = orderList.slice(startIndex, startIndex + 3);
+    const paginatedOrders = filteredOrders.slice(startIndex, startIndex + 3);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -100,6 +133,23 @@ const OrderInfoPage = () => {
     return (
         <div className="pay-success-page">
             <Title level={2} className="page-title">Thông tin đơn hàng bạn đã đặt 🎉</Title>
+
+            <div className="tab-buttons">
+                <Button
+                    type={activeTab === 'pending' ? 'primary' : 'default'}
+                    onClick={() => handleTabClick('pending')}
+                    style={{ margin: '10px' }}
+                >
+                    Đang đặt
+                </Button>
+                <Button
+                    type={activeTab === 'cancelled' ? 'primary' : 'default'}
+                    onClick={() => handleTabClick('cancelled')}
+                >
+                    Đã hủy
+                </Button>
+            </div>
+
             <ul>
                 {paginatedOrders.map((order) => (
                     <li key={order._id} style={{ padding: '20px' }}>
@@ -115,13 +165,26 @@ const OrderInfoPage = () => {
                                 >
                                     {expandedOrders[order._id] ? 'Ẩn chi tiết' : 'Xem chi tiết'}
                                 </Button>
-                                <Button
-                                    type="danger"
-                                    onClick={() => handleCancelOrderClick(order._id)}
-                                    loading={isDeleting}
-                                >
-                                    Hủy đơn hàng
-                                </Button>
+
+                                {/* Nút "Hủy đơn hàng" hoặc "Đặt lại" tùy theo trạng thái isCancel */}
+                                {order.isCancel ? (
+                                    <> {/* <Button
+                                        type="primary"
+                                        onClick={() => createOrder(order._id)}
+                                        loading={iscreateOrdering}
+                                    >
+                                        Đặt lại đơn hàng
+                                    </Button> */}</>
+
+                                ) : (
+                                    <Button
+                                        type="danger"
+                                        onClick={() => handleCancelOrderClick(order._id)}
+                                        loading={isDeleting}
+                                    >
+                                        Hủy đơn hàng
+                                    </Button>
+                                )}
                             </Space>
                             {expandedOrders[order._id] && (
                                 <>
@@ -152,7 +215,7 @@ const OrderInfoPage = () => {
             </ul>
             <Pagination
                 current={currentPage}
-                total={orderList.length}
+                total={filteredOrders.length}
                 pageSize={3}
                 onChange={handlePageChange}
                 style={{ marginTop: 20 }}

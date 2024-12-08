@@ -5,7 +5,7 @@ import './style.css';
 import * as OrderService from '../../../services/OrderService';
 import { useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
-import { updateDeliveryStatus } from '../../../services/OrderService'; // Import the update function
+import { updateDeliveryStatus } from '../../../services/OrderService';
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -13,20 +13,22 @@ const { Search } = Input;
 const ManageOrder = () => {
     const user = useSelector((state) => state.user);
 
-    // State for orders, modal visibility, order details, search query
+    // State for orders, modal visibility, order details, search query, and tabs
     const [orders, setOrders] = useState([]);
     const [filteredOrders, setFilteredOrders] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [orderDetails, setOrderDetails] = useState(null);
-    const [currentPage, setCurrentPage] = useState(1); // Trạng thái trang hiện tại
-    const [searchQuery, setSearchQuery] = useState(""); // State for search query
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchQuery, setSearchQuery] = useState("");
 
-    // Function to fetch all orders
+    // States for tracking the current tab
+    const [activeTab, setActiveTab] = useState('all'); // Default to "all" orders
+
     const getAllOrder = async () => {
         try {
             const res = await OrderService.getAllOrder(user.access_token);
             setOrders(res.data);
-            setFilteredOrders(res.data); // Set initial filtered orders to all orders
+            setFilteredOrders(res.data);
         } catch (error) {
             console.error("Error fetching orders:", error);
             setOrders([]);
@@ -39,25 +41,36 @@ const ManageOrder = () => {
         queryFn: getAllOrder,
         onSuccess: (data) => {
             setOrders(data || []);
-            setFilteredOrders(data || []); // Set filtered orders initially
+            setFilteredOrders(data || []);
         }
     });
 
-    // Function to handle search
+    // Handle search
     const handleSearch = (value) => {
         setSearchQuery(value);
-
         if (value) {
             const filtered = orders.filter(order =>
                 order.shippingAddress.fullName.toLowerCase().includes(value.toLowerCase())
             );
             setFilteredOrders(filtered);
         } else {
-            setFilteredOrders(orders); // If search query is empty, show all orders
+            setFilteredOrders(orders);
         }
     };
 
-    // Columns for the table displaying orders
+    // Handle tab change
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        if (tab === 'all') {
+            setFilteredOrders(orders);
+        } else if (tab === 'placed') {
+            setFilteredOrders(orders.filter(order => !order.isCancel && !order.isDelivered));
+        } else if (tab === 'cancelled') {
+            setFilteredOrders(orders.filter(order => order.isCancel));
+        }
+    };
+
+    // Columns for table
     const columns = [
         {
             title: 'ID Đơn hàng',
@@ -103,6 +116,16 @@ const ManageOrder = () => {
             ),
         },
         {
+            title: 'Trạng thái hủy',
+            dataIndex: 'isCancel',
+            key: 'isCancel',
+            render: (text) => (
+                <Tag color={text ? 'red' : 'green'}>
+                    {text ? 'Đã hủy' : 'Đã đặt'}
+                </Tag>
+            ),
+        },
+        {
             title: 'Hành động',
             key: 'action',
             render: (_, record) => (
@@ -119,13 +142,15 @@ const ManageOrder = () => {
         setIsModalVisible(true);
     };
 
-    // Close modal and reset order details
+    // Close modal
     const handleCancel = () => {
         setIsModalVisible(false);
         setOrderDetails(null);
     };
 
-    // Function to handle updating the delivery status
+    // Pagination settings
+    const pageSize = 5;
+    const currentOrders = filteredOrders.slice((currentPage - 1) * pageSize, currentPage * pageSize);
     const handleUpdateDeliveryStatus = async (orderId, isDelivered) => {
         try {
             // Cập nhật trạng thái giao hàng trong database
@@ -145,11 +170,7 @@ const ManageOrder = () => {
         }
     };
 
-    // Pagination settings
-    const pageSize = 5; // Number of orders per page
-    const currentOrders = filteredOrders.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-
-    // Loading state when orders are being fetched
+    // Loading state when fetching orders
     if (isLoadingOrder) {
         return <div>Loading...</div>;
     }
@@ -169,16 +190,22 @@ const ManageOrder = () => {
                 allowClear
             />
 
+            {/* Tab Navigation */}
+            <div style={{ marginBottom: '20px' }}>
+                <Button style={{ margin: "5px" }} onClick={() => handleTabChange('all')} type={activeTab === 'all' ? 'primary' : 'default'}>Tất cả</Button>
+                <Button style={{ margin: "5px" }} onClick={() => handleTabChange('placed')} type={activeTab === 'placed' ? 'primary' : 'default'}>Đang đặt</Button>
+                <Button onClick={() => handleTabChange('cancelled')} type={activeTab === 'cancelled' ? 'primary' : 'default'}>Đã hủy</Button>
+            </div>
 
             <Table
                 columns={columns}
-                dataSource={currentOrders} // Data displayed for current page
+                dataSource={currentOrders}
                 rowKey="_id"
                 pagination={{
                     current: currentPage,
                     pageSize: pageSize,
                     total: filteredOrders.length,
-                    onChange: (page) => setCurrentPage(page), // Change page
+                    onChange: (page) => setCurrentPage(page),
                 }}
             />
 

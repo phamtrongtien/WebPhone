@@ -120,3 +120,62 @@ export const UpdatesData = [
     time: "2 hours ago",
   },
 ];
+export const dataOrder = [
+  {
+    _id: "order1",
+    paidAt: "2024-12-08T10:00:00Z",
+    itemsPrice: "1,500,000 VNĐ",
+    isPaid: true,
+    isDelivered: false,
+    isCancel: false,
+    orderItems: [
+      {
+        name: "Apple Smart Watch",
+        price: "1,000,000 VNĐ",
+        amount: 1,
+        image: "/path/to/smartwatch.jpg",
+      },
+      {
+        name: "Samsung Gear 2500mAh Battery",
+        price: "500,000 VNĐ",
+        amount: 1,
+        image: "/path/to/battery.jpg",
+      },
+    ],
+    paymentMethod: 0, // Assume 0 is the index for some payment method
+  },
+  {
+    _id: "order2",
+    paidAt: "2024-12-07T15:30:00Z",
+    itemsPrice: "2,000,000 VNĐ",
+    isPaid: false,
+    isDelivered: false,
+    isCancel: true,
+    orderItems: [
+      {
+        name: "Samsung Galaxy S20",
+        price: "2,000,000 VNĐ",
+        amount: 1,
+        image: "/path/to/s20.jpg",
+      },
+    ],
+    paymentMethod: 1, // Assume 1 is another payment method
+  },
+  {
+    _id: "order3",
+    paidAt: "2024-12-06T09:15:00Z",
+    itemsPrice: "750,000 VNĐ",
+    isPaid: true,
+    isDelivered: true,
+    isCancel: false,
+    orderItems: [
+      {
+        name: "Apple AirPods Pro",
+        price: "750,000 VNĐ",
+        amount: 1,
+        image: "/path/to/airpods.jpg",
+      },
+    ],
+    paymentMethod: 2, // Assume 2 is another payment method
+  },
+];

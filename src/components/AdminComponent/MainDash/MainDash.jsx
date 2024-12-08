@@ -3,12 +3,15 @@ import Cards from "../Cards/Cards";
 import Table from "../Table/Table";
 import "./MainDash.css";
 import HeaderComponent from "../../HeaderComponent/HeaderComponent";
+import CustomerReview from "../CustomerReview/CustomerReview";
 const MainDash = () => {
   return (
     <div className="MainDash">
       <HeaderComponent isHidenCart isAdminPage isName />
 
-      <Cards />
+      {/* <Cards />
+       */}
+      <CustomerReview />
       <Table />
     </div>
   );

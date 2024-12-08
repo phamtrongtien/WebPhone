@@ -12,7 +12,8 @@ const initialState = {
     isPaid: false,
     paidAt: '',
     isDelivered: false,
-    deliveredAt: ''
+    deliveredAt: '',
+    isCancel: false
 }
 
 export const orderSlice = createSlice({

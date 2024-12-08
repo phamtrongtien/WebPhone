@@ -65,6 +65,7 @@ export const getAllOrder = async (access_token) => {
     }
 };
 export const updateDeliveryStatus = async (orderId, isDelivered, access_token) => {
+
     try {
         const res = await axios.put(
             `${process.env.REACT_APP_API_URL_BACKEND}/order/update-delivery/${orderId}`,

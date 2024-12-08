@@ -147,9 +147,9 @@ const ProductDetailComponent = ({ productId }) => {
 
         </WrapperAddressProduct>.
         {/* Thêm lựa chọn màu sắc */}
-        <div style={{ marginBottom: "10px" }}>
-          {/* <span style={{ fontSize: "16px", fontWeight: "500" }}>Chọn Màu: </span> */}
-          {/* <Select
+        {/* <div style={{ marginBottom: "10px" }}> */}
+        {/* <span style={{ fontSize: "16px", fontWeight: "500" }}>Chọn Màu: </span> */}
+        {/* <Select
             defaultValue={selectedColor}
             style={{ width: 120 }}
             onChange={handleColorChange}
@@ -159,7 +159,7 @@ const ProductDetailComponent = ({ productId }) => {
             <Select.Option value="Black">Đen</Select.Option>
             <Select.Option value="White">Trắng</Select.Option>
           </Select> */}
-        </div>
+        {/* </div> */}
 
         {/* Chỉnh sửa số lượng */}
         <div style={{ margin: "10px 0 20px", padding: "10px 0", borderTop: "1px solid #e5e5e5", borderBottom: "1px solid #e5e5e5" }}>
