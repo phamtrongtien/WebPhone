@@ -1,4 +1,4 @@
-import { Col, Image, Button, Rate, message, Input, List, Pagination } from "antd";
+import { Col, Image, Button, Rate, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { WrapperAddressProduct, WrapperPriceProduct, WrapperPriceTextProduct, WrapperProductDetail, WrapperStyleNameProduct, WrapperStyleTextSale, WrapperQualityProduct, CommentSection, CommentTitle, CommentTextArea, SubmitButton, CommentList, CommentItem, CommentAuthor, CommentDate, CommentText, PaginationWrapper } from "./style";
 import { WrapperDiscountText, WrapperReportText } from "../CardComponent/style";
@@ -32,14 +32,14 @@ const ProductDetailComponent = ({ productId }) => {
     const getCommentsByProductId = async () => {
       try {
         const res = await axios.get(`${process.env.REACT_APP_API_URL_BACKEND}/feedback/get/${productId}`);
-        setComments(res.data); // Assuming the response is in the 'data' property
+        setComments(res.data); // Update comments after each rating or comment change
       } catch (error) {
         console.error("Error fetching comments:", error);
       }
     };
 
     getCommentsByProductId();
-  }, [productId, comment]);
+  }, [productId, comment, userRating]);
 
 
   // Hàm xóa bình luận

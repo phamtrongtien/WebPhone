@@ -71,7 +71,7 @@ const CustomerReview = () => {
       };
 
       orders.forEach((order) => {
-        if (order.paymentMethod) {
+        if (order.paymentMethod && order.isCancel === false) {
           paymentCounts[order.paymentMethod] += 1;
         }
       });
@@ -214,7 +214,7 @@ const CustomerReview = () => {
       {!showChartOrderSummary ? (
         <div className="revenue-box" onClick={() => setShowChartOrderSummary(true)}>
           <h2>Tóm tắt đơn hàng</h2>
-          <p>Đã giao: {deliveredOrders} | Đã hủy: {cancelledOrders}</p>
+          <p>Đã hoàn tất: {deliveredOrders} | Đã hủy: {cancelledOrders}</p>
           <p>Tổng số đơn hàng: {deliveredOrders + cancelledOrders}</p>
 
         </div>

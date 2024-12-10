@@ -55,7 +55,7 @@ export const updateProduct = async (id, productData, access_token) => {
 };
 export const updateProductRating = async (id, rating, userId) => {
     try {
-        const res = await axios.put(`${process.env.REACT_APP_API_URL_BACKEND}/product/update/${id}`, {
+        const res = await axios.put(`${process.env.REACT_APP_API_URL_BACKEND}/product/update-rating/${id}`, {
 
             rating, userId
         });

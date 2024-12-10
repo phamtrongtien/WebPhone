@@ -35,7 +35,7 @@ const CardComponent = ({ product }) => {
             <StyleNameProduct>{product.name}</StyleNameProduct>
             <WrapperReportText>
                 <span style={{ margin: '4px' }}>
-                    <span>{product.rating}</span>
+                    <span>{product.rating.toFixed(2)}</span>
                     <StarFilled style={{ fontSize: '12px', color: 'yellow' }} />
                 </span>
                 <span>| Đã bán {product.selled}+</span>
