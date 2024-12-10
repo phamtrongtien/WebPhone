@@ -8,48 +8,58 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Popover } from "antd";
 
-const Sidebar = ({ setActiveComponent }) => { // Nhận setActiveComponent từ props
+const Sidebar = ({ setActiveComponent }) => {
   const [selected, setSelected] = useState(0);
-  const [expanded, setExpaned] = useState(true);
+  const [expanded, setExpanded] = useState(true);
   const navigate = useNavigate();
+
+  // Handle navigation and active component
   const handleNavigate = (index, item) => {
     setSelected(index);
     if (item.heading === "Orders") {
-      setActiveComponent('orders'); // Hiển thị ManageOrder
+      setActiveComponent('orders');
     } else if (item.heading === "Customers") {
-      setActiveComponent('customers'); // Hiển thị ManageCustomer
-
-    }
-    else if (item.heading === "Products") {
-      setActiveComponent('products'); // 
+      setActiveComponent('customers');
+    } else if (item.heading === "Products") {
+      setActiveComponent('products');
     } else {
-      setActiveComponent(null); // Ẩn ManageOrder và ManageCustomer cho các mục khác
+      setActiveComponent(null);
     }
   };
+
+  // Handle navigating back to the homepage
   const handleBackHome = () => {
-    navigate('/')
-  }
+    navigate('/');
+  };
+
   const content = (
     <div style={{ cursor: 'pointer' }}>
-
-      <>
-        <p onClick={handleBackHome}>Trở về trang mua hàng</p>
-
-      </>
-
+      <p onClick={handleBackHome}>Trở về trang mua hàng</p>
     </div>
   );
 
+  // Toggle the sidebar visibility
+  const toggleSidebar = () => {
+    setExpanded(!expanded);
+  };
+
   return (
     <>
-      <div className="bars" style={expanded ? { left: '60%' } : { left: '5%' }} onClick={() => setExpaned(!expanded)}>
+      {/* Hamburger Icon (Bars) */}
+      <div
+        className={`bars ${expanded ? 'open' : ''}`}
+        onClick={toggleSidebar}
+      >
         <UilBars />
       </div>
-      <motion.div className='sidebar'
-        animate={window.innerWidth <= 768 ? `${expanded}` : ''}>
+
+      {/* Sidebar */}
+      <motion.div
+        className={`sidebar ${expanded ? 'open' : ''}`}
+        animate={window.innerWidth <= 768 ? `${expanded}` : ''}
+      >
         {/* Logo */}
         <Popover content={content} trigger="click" placement="bottomRight">
-
           <div className="logo" style={{ marginLeft: '10px' }}>
             <img src={Logo} alt="logo" />
             <span>
@@ -57,18 +67,21 @@ const Sidebar = ({ setActiveComponent }) => { // Nhận setActiveComponent từ 
             </span>
           </div>
         </Popover>
+
+        {/* Menu Items */}
         <div className="menu">
           {SidebarData.map((item, index) => (
             <div
               className={selected === index ? "menuItem active" : "menuItem"}
               key={index}
-              onClick={() => handleNavigate(index, item)} // Truyền item vào hàm handleNavigate
+              onClick={() => handleNavigate(index, item)}
             >
               <item.icon />
               <span>{item.heading}</span>
             </div>
           ))}
-          {/* signoutIcon */}
+
+          {/* Sign out button */}
           <div className="menuItem">
             <UilSignOutAlt onClick={handleBackHome} /> Logout
           </div>

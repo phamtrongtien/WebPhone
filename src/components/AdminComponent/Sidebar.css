@@ -1,3 +1,4 @@
+/* Sidebar */
 .sidebar {
   display: flex;
   flex-direction: column;
@@ -5,11 +6,19 @@
   padding-top: 4rem;
   transition: all 300ms ease;
 }
-/* logo */
-.bars{
+
+/* Bars (Hamburger Icon) */
+.bars {
   display: none;
+  cursor: pointer;
+  transition: transform 300ms ease, left 300ms ease;
 }
 
+.bars.open {
+  transform: rotate(90deg); /* Rotate icon when sidebar is open */
+}
+
+/* Logo */
 .logo {
   display: flex;
   height: 5rem;
@@ -20,6 +29,7 @@
   justify-content: center;
   height: 4%;
 }
+
 .logo > span > span {
   color: var(--pink);
 }
@@ -29,14 +39,14 @@
   height: 3rem;
 }
 
-
-/* menu */
+/* Menu */
 .menu {
   margin-top: 4rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
 }
+
 .menuItem {
   display: flex;
   align-items: center;
@@ -63,6 +73,7 @@
   background: var(--activeItem);
   margin-left: 0;
 }
+
 .active::before {
   content: "";
   width: 8px;
@@ -71,48 +82,62 @@
   margin-right: calc(1rem - 8px);
 }
 
-
-/* Tablets */
+/* Tablets and Mobile - Styling for Sidebar */
 @media screen and (max-width: 1200px) {
-  .menuItem>span{
+  .menuItem > span {
     display: none;
   }
-  .logo{
+
+  .logo {
     display: none;
   }
 }
 
 @media screen and (max-width: 768px) {
-  .sidebar{
+  /* Sidebar Styling */
+  .sidebar {
     position: fixed;
-    z-index: 9;
+    z-index: 8;
     background: #ffe0e0;
     width: 55%;
-    padding-right: 1rem;
     height: 100%;
+    padding-right: 1rem;
+    top: 0;
+    left: -100%; /* Initially hidden */
+    transition: left 300ms ease;
   }
-  .menuItem>span{
+
+  .sidebar.open {
+    left: 0; /* Move sidebar into view when open */
+  }
+
+  /* Bars (Hamburger Icon) */
+  .bars {
+    display: flex;
+    position: fixed;
+    top: 2rem;
+    left: 5%;
+    background: #ffe0e0;
+    padding: 10px;
+    border-radius: 10px;
+    z-index: 9;
+  }
+
+  .bars.open {
+    left: 60%; /* Move hamburger icon to the right when sidebar is open */
+  }
+
+  /* Menu Item Text */
+  .menuItem > span {
     display: block;
   }
-  .logo{
+
+  .logo {
     display: flex;
   }
+
   .menu .menuItem:last-child {
     position: relative;
     margin-top: 6rem;
   }
-  .bars{
-    display: flex;
-    position: fixed;
-    top: 2rem;
-    left:60%;
-    background:#ffe0e0;
-    padding:10px;
-    border-radius: 10px;
-    z-index: 9;
-  }
-  .close{
-    left: -60%;
-  }
 }
-

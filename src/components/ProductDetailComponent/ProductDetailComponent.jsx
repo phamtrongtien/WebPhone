@@ -1,193 +1,188 @@
-import { Col, Image, Button, Rate } from "antd";
-import React, { useState } from "react";
-
-import {
-  WrapperAddressProduct,
-  WrapperPriceProduct,
-  WrapperPriceTextProduct,
-  WrapperProductDetail,
-  WrapperStyleNameProduct,
-  WrapperStyleTextSale,
-  WrapperQualityProduct,
-} from "./style";
+import { Col, Image, Button, Rate, message, Input, List, Pagination } from "antd";
+import React, { useEffect, useState } from "react";
+import { WrapperAddressProduct, WrapperPriceProduct, WrapperPriceTextProduct, WrapperProductDetail, WrapperStyleNameProduct, WrapperStyleTextSale, WrapperQualityProduct, CommentSection, CommentTitle, CommentTextArea, SubmitButton, CommentList, CommentItem, CommentAuthor, CommentDate, CommentText, PaginationWrapper } from "./style";
 import { WrapperDiscountText, WrapperReportText } from "../CardComponent/style";
 import { MinusOutlined, PlusOutlined, StarFilled } from "@ant-design/icons";
 import ButtonComponent from "../ButtonComponent/ButtonComponent";
 import * as ProductService from "../../services/ProductService";
+import * as FeedbackService from '../../services/FeedBackService';
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { addOrderProduct } from "../../redux/slices/orderSlice";
 import { converPrice } from "../../utils";
+import axios from "axios";
 
 const ProductDetailComponent = ({ productId }) => {
   const user = useSelector((state) => state.user);
-  const [quantity, setQuantity] = useState(1); // Số lượng mặc định là 3
-  const [selectedColor, setSelectedColor] = useState("Red"); // Màu mặc định
-  const [userRating, setUserRating] = useState(null); // Rating given by the user
+  const [quantity, setQuantity] = useState(1);
+  const [userRating, setUserRating] = useState(null);
+  const [comment, setComment] = useState(""); // User comment
+  const [comments, setComments] = useState([]); // All comments
+  const [currentPage, setCurrentPage] = useState(1); // Current page for comments
+  const [pageSize] = useState(5); // Number of comments per page
+
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch()
-  // Hàm lấy chi tiết sản phẩm
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!productId) return;
+
+    const getCommentsByProductId = async () => {
+      try {
+        const res = await axios.get(`${process.env.REACT_APP_API_URL_BACKEND}/feedback/get/${productId}`);
+        setComments(res.data); // Assuming the response is in the 'data' property
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    };
+
+    getCommentsByProductId();
+  }, [productId, comment]);
+
+
+  // Hàm xóa bình luận
+  const handleDeleteComment = async (commentId) => {
+    try {
+      // Gọi API để xóa bình luận
+      await FeedbackService.deleteComment(commentId); // Thực hiện xóa bình luận qua API
+
+      // Cập nhật lại danh sách bình luận
+      setComments(comments.filter((comment) => comment._id !== commentId));
+      message.success("Bình luận đã được xóa thành công!");
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      message.error("Có lỗi xảy ra khi xóa bình luận.");
+    }
+  };
+  // Fetch product details
   const fetchGetDetailsProduct = async ({ queryKey }) => {
-    const id = queryKey[1]; // Lấy productId từ queryKey
+    const id = queryKey[1];
     const res = await ProductService.getProductById(id);
     return res.data;
   };
+
   const updateRating = useMutation({
-    mutationFn: (rating) => ProductService.updateProduct(productId, rating),
-    onSuccess: (updatedProduct) => {
-      // Optionally, you can re-fetch the product to update the state with the latest rating
-      console.log('Rating updated', updatedProduct);
+    mutationFn: (rating) => ProductService.updateProductRating(productId, rating, user.id),
+    onSuccess: () => {
+      message.success("Đánh giá thành công!");
+    },
+    onError: () => {
+      message.warning("Người dùng đã đánh giá sản phẩm này rồi");
+    },
+  });
+
+  const handleAddComment = async () => {
+    if (!user.id) {
+      message.warning("Vui lòng đăng nhập để bình luận!");
+      navigate("/sig-in", { state: location.pathname });
+      return;
     }
-  });
+
+    if (!comment.trim()) {
+      message.warning("Vui lòng nhập bình luận trước khi gửi!");
+      return;
+    }
+
+    try {
+      const newComment = await FeedbackService.addComment(productId, user.id, comment);
+      setComments([...comments, newComment]);
+      setComment(""); // Clear comment input after successful submission
+      message.success("Gửi bình luận thành công!");
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      message.error("Có lỗi xảy ra khi gửi bình luận.");
+    }
+  };
+
   const { isLoading: isLoadingProduct, isError, error, data: products } = useQuery({
-    queryKey: ['products-details', productId], // Đảm bảo productId được đưa vào queryKey
+    queryKey: ["products-details", productId],
     queryFn: fetchGetDetailsProduct,
-    enabled: !!productId, // Chỉ thực thi nếu productId có giá trị
+    enabled: !!productId,
   });
 
-  if (isLoadingProduct) {
-    return <div>Loading...</div>;
-  }
-
-  if (isError) {
-    return <div>Error: {error.message}</div>;
-  }
+  if (isLoadingProduct) return <div>Loading...</div>;
+  if (isError) return <div>Error: {error.message}</div>;
 
   const increaseQuantity = () => {
-    if (quantity < products.countInStock) {
-      setQuantity(quantity + 1); // Increase quantity if it doesn't exceed stock
-    }
+    if (quantity < products.countInStock) setQuantity(quantity + 1);
   };
+
+  const decreaseQuantity = () => {
+    if (quantity > 1) setQuantity(quantity - 1);
+  };
+
+  const handleRatingChange = (value) => {
+    if (!user.id) {
+      message.warning("Vui lòng đăng nhập để đánh giá sản phẩm!");
+      navigate("/sig-in", { state: location.pathname });
+      return;
+    }
+    setUserRating(value);
+    updateRating.mutate(value);
+  };
+
   const handleAddOrder = () => {
     if (!user.id) {
-      navigate('/sig-in', { state: location.pathname });
+      navigate("/sig-in", { state: location.pathname });
     } else {
-      dispatch(addOrderProduct({
-        orderItem: {
-          name: products.name,
-          amount: quantity,
-          image: products.image,
-          price: products.price,
-          product: products?._id
-        }
-      }));
-
+      dispatch(
+        addOrderProduct({
+          orderItem: {
+            name: products.name,
+            amount: quantity,
+            image: products.image,
+            price: products.price,
+            product: products?._id,
+          },
+        })
+      );
     }
-  }
-  const decreaseQuantity = () => {
-    if (quantity > 1) setQuantity(quantity - 1); // Decrease quantity if it's greater than 1
   };
 
+  // Paginate the comments
+  const paginatedComments = comments.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-  // Hàm chọn màu sắc
-  const handleColorChange = (value) => {
-    setSelectedColor(value);
-  };
-  const handleRatingChange = (value) => {
-    setUserRating(value);
-    updateRating.mutate(value); // Update the rating on the server
-  };
-  const hasRated = userRating !== null;
   return (
     <WrapperProductDetail>
       <Col span={10}>
-        <Image src={products.image} alt="conan" style={{ width: '500px' }} />
-        {/* <Row style={{ flexWrap: "nowrap", paddingTop: "10px", justifyContent: "space-between" }}>
-          <WrapperColImage span={4}>
-            <WrapperImageSmall src={conanDetail1} alt="dt1" />
-          </WrapperColImage>
-          <WrapperColImage span={4}>
-            <WrapperImageSmall src={conanDetail} alt="dt1" />
-          </WrapperColImage>
-          <WrapperColImage span={4}>
-            <WrapperImageSmall src={conanDetail1} alt="dt1" />
-          </WrapperColImage>
-          <WrapperColImage span={4}>
-            <WrapperImageSmall src={conanDetail} alt="dt1" />
-          </WrapperColImage>
-          <WrapperColImage span={4}>
-            <WrapperImageSmall src={conanDetail1} alt="dt1" />
-          </WrapperColImage>
-        </Row> */}
+        <Image src={products.image} alt="Product Image" style={{ width: "500px" }} />
       </Col>
       <Col span={14} style={{ paddingLeft: "10px" }}>
-        <WrapperStyleNameProduct>
-          {products.name}
-        </WrapperStyleNameProduct>
-        <WrapperAddressProduct>
-          {products.description}
-          <p></p>
-        </WrapperAddressProduct>
-        {!hasRated && (
-          <div>
-            <span>Đánh giá sản phẩm: </span>
-            <Rate value={userRating} onChange={handleRatingChange} />
-          </div>
-        )}
+        <WrapperStyleNameProduct>{products.name}</WrapperStyleNameProduct>
+        <WrapperAddressProduct>{products.description}</WrapperAddressProduct>
+
+        <div>
+          <span>Đánh giá sản phẩm: </span>
+          <Rate value={userRating} onChange={handleRatingChange} />
+        </div>
+
         <WrapperReportText>
-          <span style={{ margin: "4px" }}>
-            <span>{products.rating}</span>
-            <StarFilled style={{ fontSize: "12px", color: "yellow" }} />
-          </span>
+          <span>{products.rating.toFixed(2)}</span>
+          <StarFilled style={{ fontSize: "12px", color: "yellow" }} />
           <WrapperStyleTextSale>| Đã bán {products.selled}</WrapperStyleTextSale>
         </WrapperReportText>
+
         <WrapperPriceProduct>
           <WrapperPriceTextProduct>
-            {converPrice(products)}VNĐ
+            {converPrice(products)} VNĐ
             <WrapperDiscountText> -{products.discount} %</WrapperDiscountText>
           </WrapperPriceTextProduct>
         </WrapperPriceProduct>
 
-        <WrapperAddressProduct>
-          <span> Giao đến </span>
-          <span className="address">{user.address}</span>
-          <span className="change-address"> -Đổi địa chỉ </span>
-
-        </WrapperAddressProduct>.
-        {/* Thêm lựa chọn màu sắc */}
-        {/* <div style={{ marginBottom: "10px" }}> */}
-        {/* <span style={{ fontSize: "16px", fontWeight: "500" }}>Chọn Màu: </span> */}
-        {/* <Select
-            defaultValue={selectedColor}
-            style={{ width: 120 }}
-            onChange={handleColorChange}
-          >
-            <Select.Option value="Red">Đỏ</Select.Option>
-            <Select.Option value="Blue">Xanh Dương</Select.Option>
-            <Select.Option value="Black">Đen</Select.Option>
-            <Select.Option value="White">Trắng</Select.Option>
-          </Select> */}
-        {/* </div> */}
-
-        {/* Chỉnh sửa số lượng */}
-        <div style={{ margin: "10px 0 20px", padding: "10px 0", borderTop: "1px solid #e5e5e5", borderBottom: "1px solid #e5e5e5" }}>
-          <div style={{ marginBottom: "5px" }}>
-            Số lượng còn lại  {products.countInStock}
+        <div style={{ marginBottom: "10px" }}>
+          <div style={{ margin: "10px 0 20px", padding: "10px 0" }}>
+            <div>Số lượng còn lại: {products.countInStock}</div>
+            <WrapperQualityProduct>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Button icon={<MinusOutlined />} onClick={decreaseQuantity} disabled={quantity <= 1} />
+                <span style={{ margin: "0 8px" }}>{quantity}</span>
+                <Button icon={<PlusOutlined />} onClick={increaseQuantity} />
+              </div>
+            </WrapperQualityProduct>
           </div>
 
-          <WrapperQualityProduct>
-            {/* Điều chỉnh số lượng với button - và + */}
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <Button
-                icon={<MinusOutlined />}
-                onClick={decreaseQuantity}
-                disabled={quantity <= 1}
-                style={{ marginRight: 8 }}
-              />
-              <span style={{ margin: "0 8px" }}>{quantity}</span>
-              <Button
-                icon={<PlusOutlined />}
-                onClick={increaseQuantity}
-                style={{ marginLeft: 8 }}
-              />
-            </div>
-          </WrapperQualityProduct>
-        </div>
-
-        {/* Nút mua */}
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <ButtonComponent
             size={40}
             styleButton={{
@@ -199,20 +194,62 @@ const ProductDetailComponent = ({ productId }) => {
             textButton="Chọn Mua"
             styleTextButton={{ color: "white" }}
           />
-          <ButtonComponent
-            size={40}
-            styleButton={{
-              background: "white",
-              height: "48px",
-              width: "200px",
-              border: "1px solid rgb(13,92,182)",
-            }}
-            textButton="Mua ngay"
-            styleTextButton={{ color: "rgb(13,92,182)" }}
-          />
         </div>
+
+
       </Col>
+      <div>
+        <CommentSection>
+          <CommentTitle>Bình luận</CommentTitle>
+          <CommentTextArea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            rows={4}
+            placeholder="Viết bình luận..."
+          />
+          <SubmitButton
+            type="primary"
+            onClick={handleAddComment}
+            style={{ marginTop: "10px" }}
+          >
+            Gửi bình luận
+          </SubmitButton>
+
+          <CommentList
+            dataSource={paginatedComments}
+            renderItem={(item) => (
+              <CommentItem key={item._id}>
+                <div>
+                  <CommentAuthor>{item.user.name || 'Unknown User'}</CommentAuthor>
+                  <CommentText>{item.comment}</CommentText>
+                  <CommentDate>{new Date(item.date).toLocaleString()}</CommentDate>
+                </div>
+
+                {/* Chỉ hiển thị nút xóa nếu user.id và item.user._id trùng */}
+                {item.user._id === user.id && (
+                  <Button
+                    type="link"
+                    danger
+                    onClick={() => handleDeleteComment(item._id)}
+                  >
+                    Xóa bình luận
+                  </Button>
+                )}
+              </CommentItem>
+            )}
+          />
+
+          <PaginationWrapper
+            current={currentPage}
+            total={comments.length}
+            pageSize={pageSize}
+            onChange={(page) => setCurrentPage(page)}
+          />
+        </CommentSection>
+      </div>
     </WrapperProductDetail>
+
+
   );
 };
 

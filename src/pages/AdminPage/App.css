@@ -1,52 +1,59 @@
-:root {
-  --yellow: linear-gradient(180deg, #f8d49a -146.42%, #fad79d -46.42%);
-  --orange: #fca61f;
-  --black: #242d49;
-  --gray: #788097;
-  --purple: linear-gradient(180deg, #bb67ff 0%, #c484f3 100%);
-  --pink: #ff919d;
-  --glass: rgba(255, 255, 255, 0.54);
-  --boxShadow: 0px 19px 60px rgb(0 0 0 / 8%);
-  --smboxShadow: -79px 51px 60px rgba(0, 0, 0, 0.08);
-  --activeItem: #f799a354;
-}
-
-.App {
-  /* padding: 0.5rem 3.5rem; */
-  color: var(--black);
-  background: linear-gradient(
-    106.37deg,
-    #ffe1bc 29.63%,
-    #ffcfd1 51.55%,
-    #f3c6f1 90.85%
-  );
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: "Inter", sans-serif;
-}
-
+/* Main container */
 .AppGlass {
-  display: grid;
-  height: 97%;
-  width: 97%;
-  background: var(--glass);
-  border-radius: 2rem;
-  gap: 16px;
-  grid-template-columns: 11rem auto 20rem;
-  overflow: hidden;
+  display: flex;
+  flex: 1; /* Cho phép phần tử này chiếm không gian còn lại */
+  overflow-y: auto; /* Cho phép cuộn dọc khi cần */
+  padding: 20px; /* Thêm padding cho AppGlass */
+  margin: 10px; /* Thêm margin cho AppGlass */
 }
 
-@media screen and (max-width: 1200px) {
-  .AppGlass {
-    grid-template-columns: 10% 50% auto;
-    overflow-y: scroll;
-  }
+/* Sidebar */
+.Sidebar {
+  width: 250px; /* Kích thước sidebar */
+  background-color: #f4f4f4;
+  height: 100vh; /* Sidebar chiếm toàn bộ chiều cao của cửa sổ */
+  overflow-y: auto; /* Cho phép cuộn khi nội dung dài */
+  padding: 20px; /* Thêm padding cho Sidebar */
+  margin-right: 20px; /* Thêm margin phải cho Sidebar */
 }
 
-@media screen and (max-width: 768px) {
-  .AppGlass {
-    grid-template-columns: 1fr;
-  }
+/* Các thành phần chính như MainDash, RightSide */
+.MainDash,
+.RightSide,
+.ManageOrder,
+.ManageCustomer,
+.ManageProduct {
+  padding: 20px; /* Thêm padding cho các phần tử này */
+  margin: 15px; /* Thêm margin cho các phần tử này */
+  box-sizing: border-box;
+  flex-shrink: 0; /* Đảm bảo các phần tử không bị thu nhỏ */
+}
+
+/* Áp dụng background với độ trong suốt */
+.MainDash {
+  background-color: #e8f4fc; /* Màu nền nhẹ cho MainDash */
+  border-radius: 10px; /* Bo góc */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bóng đổ cho MainDash */
+  flex-grow: 1; /* Để MainDash chiếm không gian còn lại */
+  padding: 20px; /* Khoảng cách bên trong */
+  box-sizing: border-box; /* Đảm bảo padding không ảnh hưởng đến kích thước tổng thể */
+  margin: 10px; /* Khoảng cách ngoài */
+  max-width: 1200px; /* Đặt chiều rộng tối đa cho MainDash */
+  height: auto; /* Để chiều cao tự động thay đổi theo nội dung */
+}
+
+.RightSide {
+  background: rgba(255, 255, 255, 0.6); /* Nền trắng với độ trong suốt */
+  flex: 0 0 200px; /* Điều chỉnh để RightSide nhỏ hơn */
+  padding: 20px; /* Thêm padding cho RightSide */
+  margin-left: 20px; /* Thêm margin trái cho RightSide */
+}
+
+.ManageOrder,
+.ManageCustomer,
+.ManageProduct {
+  max-height: 100vh; /* Giới hạn chiều cao các phần tử */
+  overflow-y: auto; /* Cho phép cuộn khi nội dung dài */
+  padding: 15px; /* Thêm padding cho các phần tử này */
+  margin-top: 10px; /* Thêm margin trên cho các phần tử này */
 }

@@ -53,3 +53,15 @@ export const updateProduct = async (id, productData, access_token) => {
         throw error;
     }
 };
+export const updateProductRating = async (id, rating, userId) => {
+    try {
+        const res = await axios.put(`${process.env.REACT_APP_API_URL_BACKEND}/product/update/${id}`, {
+
+            rating, userId
+        });
+        return res.data;
+    } catch (error) {
+        console.error('Error updating product:', error);
+        throw error;
+    }
+};

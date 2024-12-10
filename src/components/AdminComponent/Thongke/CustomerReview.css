@@ -1,0 +1,204 @@
+/* CustomerReview.css */
+.CustomerReview {
+  padding: 20px;
+  background-color: #f5f9ff; /* Pastel lam nhạt */
+  font-family: "Arial", sans-serif;
+  color: #333;
+}
+
+.filter-container {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap; /* Đảm bảo các phần tử không tràn khỏi màn hình */
+}
+
+.filter-container label {
+  font-size: 1.2rem;
+  color: #4caf50; /* Pastel lục */
+}
+
+.filter-container select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #cde7d8;
+  background-color: #eafff1;
+}
+
+.revenue-box {
+  background-color: #fff7e6;
+  border: 1px solid #ffe4b3;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 10px 0;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.revenue-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.revenue-box h2 {
+  font-size: 1.5rem;
+  color: #ffcc80;
+}
+
+.revenue-box p {
+  font-size: 1.2rem;
+  color: #ff8c42;
+}
+
+.chart-container {
+  margin: 20px 0;
+  background-color: #e0f7fa;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chart-container button {
+  padding: 8px 12px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.chart-container button:hover {
+  background-color: #45a045;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 80%;
+  max-width: 500px;
+}
+
+.modal-content h2 {
+  margin-bottom: 15px;
+  color: #4caf50;
+}
+
+.modal-content ul {
+  list-style: none;
+  padding: 0;
+}
+
+.modal-content ul li {
+  margin-bottom: 10px;
+  background-color: #eafff1;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.modal-content button {
+  padding: 8px 12px;
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.modal-content button:hover {
+  background-color: #d32f2f;
+}
+
+.payment-method-box {
+  background-color: #f5f9ff;
+  border: 1px solid #c3e8f1;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.payment-method-box h2 {
+  color: #4caf50;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .filter-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px; /* Khoảng cách giữa các phần tử */
+  }
+
+  .revenue-box {
+    padding: 10px;
+    font-size: 1rem;
+  }
+
+  .revenue-box h2 {
+    font-size: 1.2rem;
+  }
+
+  .revenue-box p {
+    font-size: 1rem;
+  }
+
+  .chart-container {
+    padding: 10px;
+  }
+
+  .modal-content {
+    width: 90%;
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-container label {
+    font-size: 1rem;
+  }
+
+  .filter-container select {
+    width: 100%;
+  }
+
+  .revenue-box h2 {
+    font-size: 1rem;
+  }
+
+  .revenue-box p {
+    font-size: 0.9rem;
+  }
+
+  .chart-container {
+    padding: 8px;
+  }
+
+  .modal-content {
+    padding: 15px;
+  }
+
+  .payment-method-box h2 {
+    font-size: 1.2rem;
+  }
+}

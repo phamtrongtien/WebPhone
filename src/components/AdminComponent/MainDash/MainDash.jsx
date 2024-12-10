@@ -3,7 +3,8 @@ import Cards from "../Cards/Cards";
 import Table from "../Table/Table";
 import "./MainDash.css";
 import HeaderComponent from "../../HeaderComponent/HeaderComponent";
-import CustomerReview from "../CustomerReview/CustomerReview";
+import Thongke from "../Thongke/Thongke";
+import TopProductsStats from "../Thongke/TopProduct/TopProduct";
 const MainDash = () => {
   return (
     <div className="MainDash">
@@ -11,8 +12,9 @@ const MainDash = () => {
 
       {/* <Cards />
        */}
-      <CustomerReview />
-      <Table />
+      <Thongke />
+      <TopProductsStats />
+      {/* <Table /> */}
     </div>
   );
 };

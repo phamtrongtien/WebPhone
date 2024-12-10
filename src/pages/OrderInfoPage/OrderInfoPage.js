@@ -21,26 +21,13 @@ const OrderInfoPage = () => {
         queryKey: ['userOrders', user.id],
         queryFn: () => OrderService.getDetailOrderByUserId(user.id, user.access_token),
         enabled: !!user.id,
-        onSuccess: (data) => {
-            console.log('Dữ liệu trả về từ API:', data);
-        },
     });
 
     // Mutation để xóa đơn hàng
     const { mutate: deleteOrder, isLoading: isDeleting } = useMutation({
         mutationFn: ({ orderId, orderItems }) => OrderService.deleteOrder(orderId, user.access_token, orderItems),
         onSuccess: () => {
-            // Sau khi xóa thành công, gọi refetch để cập nhật lại danh sách đơn hàng
-            refetch();
-        },
-    });
-
-    // Mutation để đặt lại đơn hàng
-    const { mutate: createOrder, isLoading: iscreateOrdering } = useMutation({
-        mutationFn: (orderId) => OrderService.createOrder(orderId, user.access_token),
-        onSuccess: (data) => {
-            // Thay đổi isCancel thành false sau khi đặt lại thành công
-            refetch();
+            refetch(); // Cập nhật lại danh sách sau khi xóa
         },
     });
 
@@ -59,15 +46,17 @@ const OrderInfoPage = () => {
     const handleConfirmCancel = () => {
         const orderToCancelDetails = data?.data?.find((order) => order._id === orderToCancel);
         if (orderToCancelDetails) {
+            // Cập nhật isDelivered thành false trước khi xóa
+            orderToCancelDetails.isDelivered = false;
+
             deleteOrder({
                 orderId: orderToCancel,
                 orderItems: orderToCancelDetails.orderItems,
             });
         }
 
-        // Delay the page refresh using setTimeout
         setTimeout(() => {
-            refetch(); // Call refetch to refresh data after cancellation
+            refetch(); // Cập nhật dữ liệu sau khi hủy
         }, 500);
 
         setOrderToCancel(null); // Đóng modal sau khi hủy
@@ -81,17 +70,10 @@ const OrderInfoPage = () => {
         setActiveTab(tab); // Đổi tab hiện tại (đang đặt hoặc đã hủy)
     };
 
-    useEffect(() => {
-        if (orderToCancel) {
-            // Khi orderToCancel thay đổi (khi đơn hàng bị hủy)
-            refetch(); // Thực hiện lại việc lấy dữ liệu sau khi đơn hàng bị hủy
-        }
-    }, [orderToCancel, refetch]); // Chạy lại mỗi khi orderToCancel thay đổi
-
     if (isLoading || isFetching) {
         return (
             <div className="loading">
-                <Spin tip="Đang tải thông tin đơn hàng... 🎉" />
+                <Spin tip="Đang tải thông tin đơn hàng..." />
             </div>
         );
     }
@@ -116,7 +98,7 @@ const OrderInfoPage = () => {
         );
     }
 
-    const orderList = data?.data || [];  // Đảm bảo orderList luôn là một mảng hợp lệ
+    const orderList = data?.data || []; // Đảm bảo orderList luôn là một mảng hợp lệ
 
     // Lọc đơn hàng theo tab đang chọn (Đang đặt hoặc Đã hủy)
     const filteredOrders = orderList.filter(order =>
@@ -157,7 +139,12 @@ const OrderInfoPage = () => {
                             <strong>Đơn hàng ngày: {format(new Date(order.paidAt), 'dd/MM/yyyy HH:mm')}</strong> <br />
                             Tổng tiền: {order.itemsPrice} <br />
                             Trạng thái thanh toán: {order.isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'} <br />
-                            Trạng thái giao hàng: {order.isDelivered ? 'Đã giao hàng' : 'Chưa giao hàng'} <br />
+                            Trạng thái giao hàng:
+                            {order.isCancel && !order.isDelivered
+                                ? 'Đã hủy'
+                                : order.isDelivered
+                                    ? 'Đã giao hàng'
+                                    : 'Chưa giao hàng'} <br />
                             <Space style={{ marginTop: '16px' }}>
                                 <Button
                                     type="primary"
@@ -165,18 +152,7 @@ const OrderInfoPage = () => {
                                 >
                                     {expandedOrders[order._id] ? 'Ẩn chi tiết' : 'Xem chi tiết'}
                                 </Button>
-
-                                {/* Nút "Hủy đơn hàng" hoặc "Đặt lại" tùy theo trạng thái isCancel */}
-                                {order.isCancel ? (
-                                    <> {/* <Button
-                                        type="primary"
-                                        onClick={() => createOrder(order._id)}
-                                        loading={iscreateOrdering}
-                                    >
-                                        Đặt lại đơn hàng
-                                    </Button> */}</>
-
-                                ) : (
+                                {!order.isCancel && (
                                     <Button
                                         type="danger"
                                         onClick={() => handleCancelOrderClick(order._id)}

@@ -13,6 +13,7 @@ export const FooterContent = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 20px;
 `;
 
 export const FooterLogo = styled.div`
@@ -20,6 +21,7 @@ export const FooterLogo = styled.div`
 
     img {
         width: 120px;
+        height: auto;
     }
 `;
 
@@ -38,7 +40,46 @@ export const FooterLinks = styled.div`
     }
 `;
 
+export const FooterContact = styled.div`
+    margin-top: 15px;
+    text-align: left;
+    max-width: 400px;
+
+    h4 {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    p {
+        margin: 5px 0;
+        color: #666;
+        font-size: 14px;
+    }
+`;
+
+export const FooterSocials = styled.div`
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+`;
+
+export const SocialIcon = styled.a`
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+
+    img {
+        width: 100%;
+        height: 100%;
+    }
+`;
+
 export const FooterText = styled.p`
     font-size: 14px;
     color: #666;
+    margin-top: 20px;
 `;
+
+/* Responsive Design */
+
