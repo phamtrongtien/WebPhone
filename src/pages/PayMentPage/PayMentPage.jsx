@@ -228,7 +228,7 @@ const PayMentPage = () => {
                                 onChange={setPaymentMethod}
                                 className="payment-method-select"
                             >
-                                <Option value="creditCard">Thẻ tín dụng 💳</Option>
+                                {/* <Option value="creditCard">Thẻ tín dụng 💳</Option> */}
                                 <Option value="paypal">PayPal 💰</Option>
                                 <Option value="cashOnDelivery">Thanh toán khi nhận hàng 💵</Option>
                             </Select>

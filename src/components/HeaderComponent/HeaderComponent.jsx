@@ -3,16 +3,18 @@ import { Badge, Col, Popover } from 'antd';
 import { WrapperAccout, Wrapperheader, WrapperTextHeader, WrapperTextHeaderSmall } from './style';
 import { UserOutlined, CaretDownOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import ButtonInputsearch from '../ButtonInputSearch/ButtonInputsearch';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import * as UserService from '../../services/UserService';
 import { resetUser } from '../../redux/slices/userSlide';
 import LoadingComponent from '../LoadingComponent/LoadingComponent';
 import { searchProduct } from '../../redux/slices/productSlice';
 import { resetOrder } from '../../redux/slices/orderSlice';
+import NotificationComponent from '../notification/NotificationComponent ';
 
 const HeaderComponent = ({ isHiddenCart = false, isAdminPage = false, isName = false }) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user);
     const order = useSelector((state) => state.order);
@@ -21,6 +23,8 @@ const HeaderComponent = ({ isHiddenCart = false, isAdminPage = false, isName = f
     const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
+
+    const isHomePage = location.pathname === '/';
 
     // Hàm đăng xuất
     const handleLogout = async () => {
@@ -44,14 +48,12 @@ const HeaderComponent = ({ isHiddenCart = false, isAdminPage = false, isName = f
     const handleProfile = () => navigate('/profile-user');
     const handleAdminPage = () => navigate('/admin');
     const handleNavigateLogin = () => navigate('/sig-in');
-    const handleInfoOrder = () => {
-        navigate('/my-order')
-    }
+    const handleInfoOrder = () => navigate('/my-order');
+
     // Theo dõi thay đổi của user
     useEffect(() => {
         setUserName(user?.name || 'Guest');
     }, [user?.name]);
-
 
     // Xử lý tìm kiếm
     const onSearch = (e) => {
@@ -85,7 +87,7 @@ const HeaderComponent = ({ isHiddenCart = false, isAdminPage = false, isName = f
                 )}
             </Col>
             <Col span={11}>
-                {!isName ? (
+                {isHomePage && (
                     <ButtonInputsearch
                         placeholder="Tìm kiếm sản phẩm"
                         textButton="Search"
@@ -93,32 +95,32 @@ const HeaderComponent = ({ isHiddenCart = false, isAdminPage = false, isName = f
                         style={{ width: 100 }}
                         onChange={onSearch}
                     />
-                ) : (
-                    <></>
                 )}
-
             </Col>
             <Col span={6} style={{ display: "flex", gap: "20px", alignItems: 'center' }}>
                 <LoadingComponent isLoading={loading}>
                     <WrapperAccout>
                         {!isAdminPage && <UserOutlined style={{ fontSize: '30px' }} />}
                         {user?.access_token ? (
-                            <Popover content={content} trigger="click" placement="bottomRight">
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <span>{userName}</span>
-                                    <img
-                                        src={user.avatar}
-                                        alt="Avatar"
-                                        style={{
-                                            margin: '5px',
-                                            borderRadius: '50%',
-                                            width: '30px',
-                                            height: '30px',
-                                            objectFit: 'cover',
-                                        }}
-                                    />
-                                </div>
-                            </Popover>
+                            <>
+                                <Popover content={content} trigger="click" placement="bottomRight">
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <span>{userName}</span>
+                                        <img
+                                            src={user.avatar}
+                                            alt="Avatar"
+                                            style={{
+                                                margin: '5px',
+                                                borderRadius: '50%',
+                                                width: '30px',
+                                                height: '30px',
+                                                objectFit: 'cover',
+                                            }}
+                                        />
+                                    </div>
+                                </Popover>
+                                <NotificationComponent userId={user.id} />
+                            </>
                         ) : (
                             <div onClick={handleNavigateLogin} style={{ cursor: 'pointer' }}>
                                 <WrapperTextHeaderSmall>Đăng nhập/ Đăng ký</WrapperTextHeaderSmall>

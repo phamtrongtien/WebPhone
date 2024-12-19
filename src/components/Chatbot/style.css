@@ -1,58 +1,204 @@
-.fixed-chatbot {
+/* Chatbot container */
+.chatbot-container {
   position: fixed;
-  bottom: 20px; /* Đặt cách dưới của trang 20px */
-  right: 20px; /* Đặt cách bên phải của trang 20px */
-  z-index: 1000; /* Đảm bảo nó nằm trên các phần tử khác */
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  font-family: Arial, sans-serif;
 }
 
-.chat-container {
-  background-color: #ffffff; /* Màu nền trắng cho khung chat */
-  border: 1px solid #d9d9d9; /* Đường viền nhẹ */
-  border-radius: 8px; /* Bo góc khung chat */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng */
-  width: 300px; /* Chiều rộng khung chat */
-  max-height: 400px; /* Chiều cao tối đa của khung chat */
-  overflow-y: auto; /* Cuộn dọc khi vượt quá chiều cao tối đa */
+/* Chatbot icon */
+.chatbot-icon {
+  background-color: #2d9cdb;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
   display: flex;
-  flex-direction: column; /* Sắp xếp theo cột */
-  font-size: 16px; /* Kích thước chữ chung cho chatbot */
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
 }
 
-.chat-history {
-  flex: 1; /* Chiếm hết không gian có sẵn */
-  padding: 10px; /* Khoảng cách bên trong */
-  overflow-y: auto; /* Cuộn dọc cho lịch sử chat */
-  max-height: 350px; /* Chiều cao tối đa cho lịch sử chat */
+.chatbot-icon:hover {
+  background-color: #1c7bb3;
 }
 
-.chat-history .user {
-  text-align: right; /* Văn bản của người dùng căn phải */
-  margin: 5px 0; /* Khoảng cách giữa các tin nhắn */
-  font-size: 16px; /* Kích thước chữ cho tin nhắn người dùng */
+/* Chatbot content */
+.chatbot-content {
+  position: absolute;
+  bottom: 80px;
+  right: 0;
+  width: 300px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: none;
+  transition: transform 0.3s ease-in-out;
+  transform: translateY(100%);
+  max-height: 400px;
+  overflow-y: auto;
 }
 
-.chat-history .bot {
-  text-align: left; /* Văn bản của bot căn trái */
-  margin: 5px 0; /* Khoảng cách giữa các tin nhắn */
-  font-size: 16px; /* Kích thước chữ cho tin nhắn bot */
+.chatbot-content.show {
+  display: block;
+  transform: translateY(0);
 }
 
-.chat-input {
-  margin-top: 10px; /* Khoảng cách trên input */
-  font-size: 16px; /* Kích thước chữ cho input */
+/* Header */
+.chatbot-content h3 {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
-button {
-  margin-top: 10px; /* Khoảng cách trên nút */
-  background-color: #4caf50; /* Màu nền cho nút */
-  color: white; /* Màu chữ trắng */
-  border: none; /* Không có đường viền */
-  border-radius: 4px; /* Bo góc nút */
-  padding: 10px; /* Khoảng cách bên trong nút */
-  cursor: pointer; /* Con trỏ chuột khi di chuột qua nút */
-  font-size: 16px; /* Kích thước chữ cho nút */
+/* Suggestions list */
+.suggestions-list {
+  margin-bottom: 20px;
 }
 
-button:hover {
-  background-color: #45a049; /* Màu nền khi hover */
+.suggestions-list .ant-list-header {
+  font-weight: bold;
+  color: #2d9cdb;
+}
+
+.suggestions-list button {
+  width: 100%;
+  text-align: left;
+  padding: 10px;
+  font-size: 16px;
+  color: #333;
+  background-color: #f7f7f7;
+  /* border: 1px solid #e0e0e0; */
+  /* border-radius: 5px; */
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.suggestions-list button:hover {
+  background-color: #2d9cdb;
+  color: white;
+}
+
+/* Message container */
+.messages-container {
+  max-height: 250px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.message {
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 80%;
+}
+
+.message.user {
+  background-color: #f1f1f1;
+  align-self: flex-start;
+}
+
+.message.bot {
+  background-color: #d1e7ff;
+  align-self: flex-end;
+}
+
+/* Input and button */
+.input-container {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.input-container .ant-input {
+  width: 80%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.input-container .ant-btn {
+  width: 18%;
+  background-color: #2d9cdb;
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.input-container .ant-btn:hover {
+  background-color: #1c7bb3;
+}
+/* Suggestions list */
+.suggestions-list {
+  margin-bottom: 20px;
+}
+
+.suggestions-list .ant-list-header {
+  font-weight: bold;
+  color: #2d9cdb;
+}
+
+/* Cải thiện button trong danh sách gợi ý */
+.suggestions-list button {
+  width: 100%; /* Đảm bảo button chiếm hết chiều rộng */
+  text-align: left; /* Giữ cho text trong button căn trái */
+  padding: 10px; /* Tăng khoảng cách xung quanh text */
+  font-size: 14px; /* Giảm kích thước font chữ */
+  color: #333; /* Màu chữ tối */
+  background-color: #f7f7f7; /* Màu nền nhạt */
+  border: 1px solid #e0e0e0; /* Viền button */
+  border-radius: 5px; /* Bo góc cho button */
+  margin-bottom: 10px; /* Khoảng cách giữa các button */
+  transition: background-color 0.3s ease; /* Hiệu ứng đổi màu nền khi hover */
+  overflow-wrap: break-word; /* Đảm bảo text không bị vỡ chữ */
+}
+
+/* Hover effect cho button */
+.suggestions-list button:hover {
+  background-color: #2d9cdb;
+  color: white;
+  cursor: pointer; /* Thêm hiệu ứng con trỏ chuột khi hover */
+}
+
+/* Giới hạn chiều rộng button nếu nội dung quá dài */
+.suggestions-list button {
+  white-space: normal; /* Cho phép text xuống dòng */
+  text-overflow: ellipsis; /* Thêm dấu ba chấm nếu nội dung quá dài */
+  word-wrap: break-word; /* Cho phép text xuống dòng khi cần */
+}
+/* Message container */
+.messages-container {
+  max-height: 250px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+/* Cả câu hỏi và câu trả lời sẽ căn lề trái hoặc phải */
+.message {
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 80%;
+}
+
+/* Tin nhắn của người dùng (câu hỏi) hiển thị bên phải */
+.message.user {
+  background-color: #f1f1f1;
+  align-self: flex-end; /* Đặt tin nhắn người dùng sang phải */
+  text-align: right; /* Căn chỉnh chữ sang phải */
+}
+
+/* Tin nhắn của shop (câu trả lời) hiển thị bên trái */
+.message.bot {
+  background-color: #d1e7ff;
+  align-self: flex-start; /* Đặt tin nhắn bot sang trái */
+  text-align: left; /* Căn chỉnh chữ sang trái */
 }

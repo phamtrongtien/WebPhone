@@ -152,7 +152,7 @@ const OrderInfoPage = () => {
                                 >
                                     {expandedOrders[order._id] ? 'Ẩn chi tiết' : 'Xem chi tiết'}
                                 </Button>
-                                {!order.isCancel && (
+                                {!order.isCancel && !order.isPaid && (
                                     <Button
                                         type="danger"
                                         onClick={() => handleCancelOrderClick(order._id)}
