@@ -41,7 +41,6 @@ export const FooterLinks = styled.div`
 `;
 
 export const FooterContact = styled.div`
-    margin-top: 15px;
     text-align: left;
     max-width: 400px;
 

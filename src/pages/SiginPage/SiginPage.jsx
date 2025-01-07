@@ -139,7 +139,7 @@ const SiginPage = () => {
                                 />
                             </LoadingComponent>
                         </WrapperLoginButton>
-                        <p><WrapperTextLight>Quên mật khẩu ?</WrapperTextLight></p>
+                        {/* <p><WrapperTextLight>Quên mật khẩu ?</WrapperTextLight></p> */}
                         <p>chưa có tài khoản <button onClick={handleSignUpClick} style={{ border: 'none', background: 'none', cursor: 'pointer' }}><WrapperTextLight>Tạo tài khoản</WrapperTextLight></button></p>
                     </WrapperContainerLeft>
                     <WrapperContainerRight>

@@ -71,7 +71,7 @@ const Chatbot = () => {
     return (
         <div className="chatbot-container">
             <div className="chatbot-icon" onClick={toggleChat}>
-                <span>💬</span>
+                <span style={{ fontSize: '15px' }}>💬</span>
             </div>
 
             <div className={`chatbot-content ${showChat ? 'show' : ''}`}>

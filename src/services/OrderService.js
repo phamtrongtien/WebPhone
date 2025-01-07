@@ -82,3 +82,28 @@ export const updateDeliveryStatus = async (orderId, isDelivered, access_token) =
         throw error;
     }
 };
+export const updatePaymentStatus = async (orderId, isPaid, access_token) => {
+    try {
+        const res = await axios.put(
+            `${process.env.REACT_APP_API_URL_BACKEND}/order/update-payment/${orderId}`,
+            { isPaid }, // Trạng thái thanh toán
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`, // Truyền token dưới header Authorization
+                },
+            }
+        );
+
+        // In ra kết quả thành công (tuỳ chọn)
+        console.log('Payment status updated successfully:', res.data);
+
+        return res.data; // Trả về dữ liệu từ response
+
+    } catch (error) {
+        // Xử lý lỗi chi tiết
+        console.error('Error updating payment status:', error.response ? error.response.data : error.message);
+
+        // Ném lại lỗi cho các xử lý sau nếu cần
+        throw new Error('Failed to update payment status');
+    }
+};

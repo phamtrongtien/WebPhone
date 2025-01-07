@@ -1,6 +1,5 @@
 import React from "react";
-import Cards from "../Cards/Cards";
-import Table from "../Table/Table";
+
 import "./MainDash.css";
 import HeaderComponent from "../../HeaderComponent/HeaderComponent";
 import Thongke from "../Thongke/Thongke";

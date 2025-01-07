@@ -23,7 +23,7 @@ function AdminPage() {
                 return (
                     <>
                         <MainDash />
-                        <RightSide />
+                        {/* <RightSide /> */}
                     </>
                 );
         }

@@ -14,6 +14,7 @@ import Chatbot from '../../components/Chatbot/Chatbot';
 import { useQuery } from '@tanstack/react-query';
 import * as ProductService from '../../services/ProductService';
 import { useSelector } from 'react-redux';
+import { FontSizeOutlined } from '@ant-design/icons';
 
 const HomePage = () => {
     const searchProduct = useSelector((state) => state.product.search); // Lấy từ Redux state
@@ -138,9 +139,26 @@ const HomePage = () => {
                 <PromoBanner>🔥 Giảm giá lên đến 50% cho sản phẩm điện tử!</PromoBanner>
 
                 {/* Loại sản phẩm */}
-                <WrapperTypeProduct ref={refWrapper}>
+                <WrapperTypeProduct
+                    ref={refWrapper}
+                    style={{
+                        fontSize: '20px',
+                        marginRight: '10px',
+                        marginBottom: '10px',
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                    }}
+                >
                     {displayedTypes.map((item, index) => (
-                        <TypeProduct name={item} key={index} />
+                        <TypeProduct
+                            name={item}
+                            key={index}
+                            style={{
+                                flex: '1 0 calc(12.5% - 10px)', // Chiều rộng tối đa cho mỗi item (8 items trên mỗi dòng)
+                                marginRight: '10px',
+                                marginBottom: '10px',
+                            }}
+                        />
                     ))}
                     {typeProduct.length > 6 && !isExpanded && (
                         <span
@@ -156,6 +174,8 @@ const HomePage = () => {
                         </span>
                     )}
                 </WrapperTypeProduct>
+
+
 
                 {searchProduct ? (
                     // Hiển thị kết quả tìm kiếm

@@ -4,7 +4,7 @@ import * as OrderService from "../../../services/OrderService";
 import { useSelector } from "react-redux";
 import "./CustomerReview.css";
 
-const CustomerReview = () => {
+const Thongke = () => {
   const user = useSelector((state) => state.user);
   const [orderss, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
@@ -17,29 +17,48 @@ const CustomerReview = () => {
   const [timeFilter, setTimeFilter] = useState("all");
   const [selectedDate, setSelectedDate] = useState(null);
   const [orderDetails, setOrderDetails] = useState([]);
+  const [uniqueCustomers, setUniqueCustomers] = useState([]);
+  const [showUniqueCustomersChart, setShowUniqueCustomersChart] = useState(false);
+  const [tong, setTong] = useState();
   const [paymentMethods, setPaymentMethods] = useState({
     creditCard: 0,
     paypal: 0,
     cashOnDelivery: 0,
   });
+
   const getAllOrder = async () => {
     try {
       const res = await OrderService.getAllOrder(user.access_token);
       const orders = res.data;
+      const uniqueUsers = new Set(orders.map(order => order.user));
 
+      // Tổng số khách hàng đã mua
+      const totalCustomers = uniqueUsers.size;
+      setTong(totalCustomers)
       const groupedOrders = orders.reduce((acc, order) => {
         const date = new Date(order.paidAt).toISOString().split("T")[0];
+
         if (!acc[date]) {
-          acc[date] = { totalPrice: 0, delivered: 0, cancelled: 0, orders: [] };
+          acc[date] = {
+            totalPrice: 0,
+            delivered: 0,
+            cancelled: 0,
+            orders: [],
+            customers: new Set(), // Track unique customers
+          };
         }
+
         if (!order.isCancel) {
           acc[date].totalPrice += order.totalPrice;
+          acc[date].customers.add(order.user); // Add the user to the set of unique customers
         }
+
         if (order.isDelivered) {
           acc[date].delivered += 1;
         } else if (order.isCancel) {
           acc[date].cancelled += 1;
         }
+
         acc[date].orders.push(order);
         return acc;
       }, {});
@@ -50,6 +69,7 @@ const CustomerReview = () => {
         delivered: groupedOrders[date].delivered,
         cancelled: groupedOrders[date].cancelled,
         orders: groupedOrders[date].orders,
+        uniqueCustomers: groupedOrders[date].customers.size, // Count unique customers
       }));
 
       const total = groupedOrdersArray.reduce(
@@ -64,25 +84,27 @@ const CustomerReview = () => {
         (sum, order) => sum + order.cancelled,
         0
       );
+
       const paymentCounts = {
-        creditCard: 0,
         paypal: 0,
         cashOnDelivery: 0,
       };
 
       orders.forEach((order) => {
-        if (order.paymentMethod && order.isCancel === false) {
+        if (order.paymentMethod && !order.isCancel) {
           paymentCounts[order.paymentMethod] += 1;
         }
       });
+
       groupedOrdersArray.sort((a, b) => new Date(a.date) - new Date(b.date));
 
       setOrders(groupedOrdersArray);
       setFilteredOrders(groupedOrdersArray);
       setTotalRevenue(total);
-      setPaymentMethods(paymentCounts);
       setDeliveredOrders(deliveredCount);
       setCancelledOrders(cancelledCount);
+      setPaymentMethods(paymentCounts);
+      setUniqueCustomers(groupedOrdersArray.map((order) => order.uniqueCustomers)); // Update unique customers
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -120,7 +142,6 @@ const CustomerReview = () => {
 
   const paymentMethodData = {
     series: [
-      paymentMethods.creditCard,
       paymentMethods.paypal,
       paymentMethods.cashOnDelivery,
     ],
@@ -128,8 +149,8 @@ const CustomerReview = () => {
       chart: {
         type: "pie",
       },
-      labels: ["Thẻ tín dụng 💳", "PayPal 💰", "Thanh toán khi nhận hàng 💵"],
-      colors: ["#4CAF50", "#FFC107", "#F44336"],
+      labels: ["PayPal 💰", "Thanh toán khi nhận hàng 💵"],
+      colors: ["#FFC107", "#F44336"],
       legend: {
         position: "bottom",
       },
@@ -139,6 +160,7 @@ const CustomerReview = () => {
       },
     },
   };
+
   const revenueData = {
     series: [
       {
@@ -183,6 +205,40 @@ const CustomerReview = () => {
     },
   };
 
+  const uniqueCustomersData = {
+    series: [
+      {
+        name: "Số lượng khách hàng",
+        data: filteredOrders.map((order) => order.uniqueCustomers || 0),
+      },
+    ],
+    options: {
+      chart: {
+        type: "line", // Changed to line chart for time-based display
+      },
+      stroke: {
+        curve: "smooth",
+        colors: ["#28a745"],
+      },
+      tooltip: {
+        x: { format: "dd/MM/yy" },
+        // y: { formatter: (value) => `${value} khách hàng` },
+      },
+      xaxis: {
+        categories: filteredOrders.map((order) =>
+          order.date ? new Date(order.date).toISOString().split("T")[0] : "N/A"
+        ),
+        labels: { formatter: (value) => new Date(value).toLocaleDateString() },
+      },
+      yaxis: {
+        labels: {
+          formatter: (value) => `${Math.round(value)} khách hàng`,
+        },
+      },
+    },
+  };
+
+
   if (isLoading) {
     return <div className="loader"></div>;
   }
@@ -216,7 +272,6 @@ const CustomerReview = () => {
           <h2>Tóm tắt đơn hàng</h2>
           <p>Đã hoàn tất: {deliveredOrders} | Đã hủy: {cancelledOrders}</p>
           <p>Tổng số đơn hàng: {deliveredOrders + cancelledOrders}</p>
-
         </div>
       ) : (
         <div className="chart-container">
@@ -242,6 +297,22 @@ const CustomerReview = () => {
           </div>
         </div>
       )}
+
+      {/* Updated unique customers chart */}
+      {!showUniqueCustomersChart ? (
+        <div className="revenue-box" onClick={() => setShowUniqueCustomersChart(true)}>
+          <h2>Số lượng khách hàng đã mua hàng</h2>
+          <p>{tong} khách hàng</p>
+          <small>Nhấn để xem chi tiết biểu đồ</small>
+        </div>
+      ) : (
+        <div className="chart-container">
+          <button onClick={() => setShowUniqueCustomersChart(false)}>Đóng</button>
+          <Chart options={uniqueCustomersData.options} series={uniqueCustomersData.series} type="line" />
+        </div>
+      )}
+
+
       <div className="payment-method-box">
         <h2>Xu hướng thanh toán</h2>
         <Chart
@@ -255,4 +326,4 @@ const CustomerReview = () => {
   );
 };
 
-export default CustomerReview;
+export default Thongke;

@@ -5,7 +5,8 @@ import './style.css';
 import * as OrderService from '../../../services/OrderService';
 import { useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
-import { updateDeliveryStatus } from '../../../services/OrderService';
+import { updateDeliveryStatus, updatePaymentStatus } from '../../../services/OrderService'; // Import the new update function
+import jsPDF from 'jspdf';
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -70,12 +71,11 @@ const ManageOrder = () => {
         }
     };
 
-    // Columns for table
     const columns = [
         {
-            title: 'ID Đơn hàng',
-            dataIndex: '_id',
-            key: '_id',
+            title: 'STT',
+            key: 'index',
+            render: (text, record, index) => (currentPage - 1) * pageSize + index + 1,
         },
         {
             title: 'Tên khách hàng',
@@ -151,16 +151,37 @@ const ManageOrder = () => {
     // Pagination settings
     const pageSize = 5;
     const currentOrders = filteredOrders.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-    const handleUpdateDeliveryStatus = async (orderId, isDelivered) => {
-        try {
-            // Cập nhật trạng thái giao hàng trong database
-            const updatedOrder = await updateDeliveryStatus(orderId, isDelivered, user.access_token);
 
-            // Gọi lại API để lấy lại danh sách đơn hàng mới nhất sau khi cập nhật
+    // Handle update of payment status
+    const handleUpdatePaymentStatus = async (orderId, isPaid) => {
+        try {
+            // Cập nhật trạng thái thanh toán
+            const updatedOrder = await updatePaymentStatus(orderId, true, user.access_token);
+
+            // Gọi lại API để lấy danh sách đơn hàng mới nhất
             getAllOrder();
 
             notification.success({
-                message: 'Cập nhật trạng thái giao hàng thành công',
+                message: `Trạng thái thanh toán đã cập nhật thành công!`,
+            });
+        } catch (error) {
+            console.error('Error updating payment status:', error);
+            notification.error({
+                message: 'Cập nhật trạng thái thanh toán thất bại',
+            });
+        }
+    };
+
+    // Handle delivery status update
+    const handleUpdateDeliveryStatus = async (orderId, isDelivered) => {
+        try {
+            const updatedOrder = await updateDeliveryStatus(orderId, isDelivered, user.access_token);
+
+            getAllOrder();
+            printInvoice(orderDetails);
+
+            notification.success({
+                message: 'Cập nhật trạng thái giao hàng và in hóa đơn thành công',
             });
         } catch (error) {
             console.error('Error updating delivery status:', error);
@@ -169,6 +190,51 @@ const ManageOrder = () => {
             });
         }
     };
+
+    // Hàm in hóa đơn
+    const removeVietnameseTones = (str) => {
+        return str
+            .normalize("NFD") // Chuyển chuỗi thành dạng phân tách dấu
+            .replace(/[\u0300-\u036f]/g, "") // Loại bỏ các dấu
+            .toUpperCase(); // Chuyển thành chữ in hoa
+    };
+
+    const printInvoice = (order) => {
+        const doc = new jsPDF();
+        doc.setFontSize(16);
+        doc.text(removeVietnameseTones("HOA DON GIAO HANG"), 20, 20);
+
+        // Thông tin đơn hàng
+        doc.setFontSize(12);
+        doc.text(`MA DON HANG: ${removeVietnameseTones(order._id)}`, 20, 40);
+        doc.text(`NGAY: ${new Date().toLocaleDateString()}`, 20, 50);
+
+        // Người mua
+        doc.text(`TEN KHACH HANG: ${removeVietnameseTones(order.shippingAddress.fullName)}`, 20, 70);
+        doc.text(`DIA CHI: ${removeVietnameseTones(order.shippingAddress.address)}`, 20, 80);
+        doc.text(`PHONE: ${order.shippingAddress.phone}`, 20, 90);
+
+        // Người xác nhận (admin)
+        doc.text(`XAC NHAN BOI: ${user.name ? removeVietnameseTones(user.name) : "ADMIN"}`, 20, 110);
+
+        // Danh sách sản phẩm
+        doc.text(removeVietnameseTones("DANH SACH SAN PHAM:"), 20, 130);
+        order.orderItems.forEach((item, index) => {
+            doc.text(
+                `${index + 1}. ${removeVietnameseTones(item.name)} - SL: ${item.amount} - GIA: ${item.price.toLocaleString()} VND`,
+                20,
+                140 + index * 10
+            );
+        });
+
+        // Tổng giá
+        doc.text(`TONG GIA: ${order.totalPrice.toLocaleString()} VND`, 20, 180);
+
+        // Xuất PDF
+        doc.save(`invoice_${order._id}.pdf`);
+    };
+
+
 
     // Loading state when fetching orders
     if (isLoadingOrder) {
@@ -232,27 +298,32 @@ const ManageOrder = () => {
                                             <p><strong>Tên sản phẩm:</strong> {item.name}</p>
                                             <img style={{ width: '50px' }} src={item.image} />
                                             <p><strong>Số lượng:</strong> {item.amount}</p>
-                                            <p><strong>Giá:</strong> {item.price.toLocaleString()} VND</p>
+                                            <p><strong>Giá:</strong> {item.price} VND</p>
                                         </Card>
                                     </Col>
                                 ))}
                             </Row>
                         </Card>
 
-                        <Card title="Thông tin thanh toán" bordered={false} style={{ marginTop: 20 }}>
-                            <p><strong>Tổng giá:</strong> {orderDetails.totalPrice.toLocaleString()} VND</p>
-                            <p><strong>Hình thức thanh toán</strong></p>
-                            <p><strong>Trạng thái thanh toán:</strong> {orderDetails.isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}</p>
-                            <p><strong>Trạng thái giao hàng:</strong> {orderDetails.isDelivered ? 'Đã giao' : 'Chưa giao'}</p>
-                            {!orderDetails.isDelivered && (
-                                <Button
-                                    type="primary"
-                                    onClick={() => handleUpdateDeliveryStatus(orderDetails._id, true)}
-                                >
-                                    Đánh dấu là đã giao
-                                </Button>
-                            )}
-                        </Card>
+                        {/* Update Payment Status */}
+                        <div style={{ marginTop: 20 }}>
+                            <Button
+                                type={orderDetails.isPaid ? 'default' : 'primary'}
+                                onClick={() => handleUpdatePaymentStatus(orderDetails._id, !orderDetails.isPaid)}
+                            >
+                                {orderDetails.isPaid ? 'Đánh dấu đã thanh toán' : 'Đánh dấu chưa thanh toán'}
+                            </Button>
+                        </div>
+
+                        {/* Update Delivery Status */}
+                        <div style={{ marginTop: 20 }}>
+                            <Button
+                                type={orderDetails.isDelivered ? 'default' : 'primary'}
+                                onClick={() => handleUpdateDeliveryStatus(orderDetails._id, !orderDetails.isDelivered)}
+                            >
+                                {orderDetails.isDelivered ? 'Đánh dấu chưa giao' : 'Đánh dấu đã giao'}
+                            </Button>
+                        </div>
                     </div>
                 )}
             </Modal>

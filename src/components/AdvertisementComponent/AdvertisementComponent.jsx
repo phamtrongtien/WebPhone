@@ -1,6 +1,6 @@
 import React from 'react';
 import { AdvertisementContainer, CloseButton, AdImage } from './style';
-import adImage from '../../assets/img/model.png'; // Đường dẫn đến hình ảnh quảng cáo
+import adImage from '../../assets/img/ad2.jpg'; // Đường dẫn đến hình ảnh quảng cáo
 
 const AdvertisementComponent = ({ onClose }) => {
     return (
