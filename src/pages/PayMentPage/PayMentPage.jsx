@@ -240,7 +240,7 @@ const PayMentPage = () => {
                             >
                                 <Option value="standard">Giao hàng tiêu chuẩn 📦</Option>
                                 <Option value="express">Giao hàng nhanh 🚀</Option>
-                                <Option value="free">Miễn phí giao hàng 🎉</Option>
+                                {/* <Option value="free">Miễn phí giao hàng 🎉</Option> */}
                             </Select>
                         </div>
                         <div className="right">
