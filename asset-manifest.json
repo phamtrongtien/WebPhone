@@ -1,0 +1,35 @@
+{
+  "files": {
+    "main.css": "/WebPhone/static/css/main.0e333d20.css",
+    "main.js": "/WebPhone/static/js/main.73dcb75a.js",
+    "static/js/239.f53da61d.chunk.js": "/WebPhone/static/js/239.f53da61d.chunk.js",
+    "static/js/213.07f5315a.chunk.js": "/WebPhone/static/js/213.07f5315a.chunk.js",
+    "static/js/667.6bdfe8ab.chunk.js": "/WebPhone/static/js/667.6bdfe8ab.chunk.js",
+    "static/js/453.8a982862.chunk.js": "/WebPhone/static/js/453.8a982862.chunk.js",
+    "static/media/banner-quang-cao-dien-thoai_103211774.jpg": "/WebPhone/static/media/banner-quang-cao-dien-thoai_103211774.f6a872933547ad497526.jpg",
+    "static/media/jpg": "/WebPhone/static/media/6383710935847606737329161.e0197e003c9c7f439faf.jpg",
+    "static/media/like.png": "/WebPhone/static/media/like.2e878ce974884b3de7e2.png",
+    "static/media/ad2.jpg": "/WebPhone/static/media/ad2.c7e0e96872f433e69901.jpg",
+    "static/media/mau-banner-quang-cao-san-pham-15.jpg": "/WebPhone/static/media/mau-banner-quang-cao-san-pham-15.6052ff432244c1196476.jpg",
+    "static/media/img1.png": "/WebPhone/static/media/img1.a0fca9c51749c1ee3db5.png",
+    "static/media/anhdk.png": "/WebPhone/static/media/anhdk.263ec79f53129acd3f14.png",
+    "static/media/img2.png": "/WebPhone/static/media/img2.f5f922c9b93eaf2c4065.png",
+    "static/media/img3.png": "/WebPhone/static/media/img3.6b1484548ee065fd59b5.png",
+    "static/media/th.jpg": "/WebPhone/static/media/th.8b602e8f77a78a63f019.jpg",
+    "static/media/slick.svg": "/WebPhone/static/media/slick.2630a3e3eab21c607e21.svg",
+    "static/media/slick.eot": "/WebPhone/static/media/slick.a4e97f5a2a64f0ab1323.eot",
+    "static/media/slick.ttf": "/WebPhone/static/media/slick.c94f7671dcc99dce43e2.ttf",
+    "static/media/slick.woff": "/WebPhone/static/media/slick.295183786cd8a1389865.woff",
+    "index.html": "/WebPhone/index.html",
+    "main.0e333d20.css.map": "/WebPhone/static/css/main.0e333d20.css.map",
+    "main.73dcb75a.js.map": "/WebPhone/static/js/main.73dcb75a.js.map",
+    "239.f53da61d.chunk.js.map": "/WebPhone/static/js/239.f53da61d.chunk.js.map",
+    "213.07f5315a.chunk.js.map": "/WebPhone/static/js/213.07f5315a.chunk.js.map",
+    "667.6bdfe8ab.chunk.js.map": "/WebPhone/static/js/667.6bdfe8ab.chunk.js.map",
+    "453.8a982862.chunk.js.map": "/WebPhone/static/js/453.8a982862.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0e333d20.css",
+    "static/js/main.73dcb75a.js"
+  ]
+}
